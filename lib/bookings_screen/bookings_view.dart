@@ -121,6 +121,21 @@ class BookingViewState extends State<BookingsView> {
 
     return Column(
       children: [
+        Row(
+          children: [
+            Spacer(),
+            OutlinedButton(
+                onPressed: () {
+                  if (activeBooking == null) return;
+                  bookings.add(activeBooking!);
+
+                  activeBooking!.updateSeats(seatCells, activeBooking!, false);
+                  activeBooking = null;
+                  setState(() {});
+                },
+                child: Text("Buchung deaktivieren"))
+          ],
+        ),
         for (final rect in bookingsDefinition)
           for (var y = 0; y < rect.height; y++, yAll++)
             Row(
