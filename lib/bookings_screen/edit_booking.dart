@@ -18,9 +18,6 @@ class EditBookingWidget extends StatelessWidget {
     } else {
       return Form(
         key: formKey,
-        onChanged: () {
-          this.booking.lastName =
-        },
         child: Row(
           children: [
             context.space(0, 32),
@@ -28,7 +25,6 @@ class EditBookingWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-
                   initialValue: booking!.lastName,
                 ),
               ),

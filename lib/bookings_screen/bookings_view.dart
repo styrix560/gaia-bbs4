@@ -37,6 +37,36 @@ class BookingViewState extends State<BookingsView> {
   }
 
   void onClick(Seat seat) {
+    // if a different booking is pressed, make the new one active
+    List<Booking> clickedBookings =
+        bookings.where((element) => element.seats.contains(seat)).toList();
+    assert(clickedBookings.length < 2);
+    if (clickedBookings.length == 1) {
+      // add activeBooking into the bookings-list
+      bookings.add(activeBooking!);
+
+      // update the seats from the previously active booking to be a normal booking
+      if (activeBooking != null) {
+        for (Seat seat in activeBooking!.seats) {
+          seatCells[seat] =
+              seatCells[seat]!.updateWithValues(activeBooking, false);
+        }
+      }
+
+      var newBooking = clickedBookings.first;
+      bookings.remove(newBooking);
+      activeBooking = newBooking;
+
+      for (Seat seat in activeBooking!.seats) {
+        seatCells[seat] =
+            seatCells[seat]!.updateWithValues(activeBooking, true);
+      }
+
+      // force rebuild
+      setState(() {});
+      return;
+    }
+
     if (activeBooking == null) {
       initActiveBooking(seat);
       setState(() {
