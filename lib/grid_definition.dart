@@ -1,7 +1,5 @@
 import "package:collection/collection.dart";
 
-import "package:flutter/cupertino.dart";
-
 class Rectangle {
   final int width;
   final int height;

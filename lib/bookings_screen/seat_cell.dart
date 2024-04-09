@@ -1,41 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../types.dart';
 
-class SeatCellWidget extends HookWidget {
+class SeatCellWidget extends StatelessWidget {
   final int x;
   final int y;
   final bool isAfternoon;
-  final Seat seat;
-  Booking? booking;
-  bool isActive;
+  final Booking? booking;
+  final bool isActive;
+  final void Function(Seat seat) onClick;
 
-  void Function(Seat seat) onClick;
+  const SeatCellWidget(this.x, this.y, this.isAfternoon, this.booking,
+      this.isActive, this.onClick,
+      {super.key});
 
-  SeatCellWidget(this.x, this.y, this.isAfternoon, this.onClick, this.isActive)
-      : seat = Seat(y, x);
-
-  void updateState(Booking? booking, bool isActive) {
-    if (this.booking == booking && this.isActive == isActive) return;
-    this.booking = booking;
-    this.isActive = isActive;
-  }
+  SeatCellWidget updateWithValues(
+    Booking? booking,
+    bool isActive,
+  ) =>
+      SeatCellWidget(x, y, isAfternoon, booking, isActive, onClick);
 
   @override
   Widget build(BuildContext context) {
-    print('rebuild seat cell ${seat.toString()}');
-    var rebuildCounter = useState(0);
-    rebuild() => rebuildCounter.value++;
+    final seat = Seat(y, x);
 
     getColor() {
       if (isActive) return Colors.lightBlue.shade50;
       if (booking == null) return Colors.green;
 
-      var amountOfPaidSeats =
-          booking!.paidAmount / booking!.price * booking!.seats.length;
+      var amountOfPaidSeats = booking!.paidAmount /
+          booking!.getPrice(isAfternoon) *
+          booking!.seats.length;
 
-      if (booking!.seats.indexOf(Seat(y, x)) < amountOfPaidSeats) {
+      if (booking!.getSeatsSorted().indexOf(seat) < amountOfPaidSeats) {
         return Colors.red;
       } else {
         return Colors.yellow;
@@ -45,21 +42,19 @@ class SeatCellWidget extends HookWidget {
     String getText() => booking?.lastName ?? seat.toString();
 
     return Expanded(
-      flex: 2,
-      child: GestureDetector(
-        onTapDown: (_) {
-          onClick(seat);
-          rebuild();
-        },
-        child: Container(
-          decoration: BoxDecoration(border: Border.all(), color: getColor()),
-          child: Text(
-            getText(),
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ),
-    );
+        flex: 2,
+        child: GestureDetector(
+            onTapDown: (_) {
+              onClick(seat);
+            },
+            child: Container(
+              decoration:
+                  BoxDecoration(border: Border.all(), color: getColor()),
+              child: Text(
+                getText(),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+            )));
   }
 }
