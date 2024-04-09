@@ -1,5 +1,7 @@
 import 'package:collection/collection.dart';
 
+import 'bookings_screen/seat_cell.dart';
+
 class Booking {
   final String id;
   final String firstName;
@@ -15,6 +17,14 @@ class Booking {
   List<Seat> getSeatsSorted() => seats.toList().sorted(
         (a, b) => a.toString().compareTo(b.toString()),
       );
+
+  void updateSeats(Map<Seat, SeatCellWidget> seatCells, Booking booking,
+      bool isActive) {
+    for (var seat in seats) {
+      seatCells[seat] =
+          seatCells[seat]!.updateWithValues(booking, isActive);
+    }
+  }
 
   const Booking(this.id, this.firstName, this.lastName, this.className,
       this.seats, this.paidAmount, this.priceType);

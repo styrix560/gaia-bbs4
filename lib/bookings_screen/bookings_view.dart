@@ -47,20 +47,14 @@ class BookingViewState extends State<BookingsView> {
 
       // update the seats from the previously active booking to be a normal booking
       if (activeBooking != null) {
-        for (Seat seat in activeBooking!.seats) {
-          seatCells[seat] =
-              seatCells[seat]!.updateWithValues(activeBooking, false);
-        }
+        activeBooking!.updateSeats(seatCells, activeBooking!, false);
       }
 
       var newBooking = clickedBookings.first;
       bookings.remove(newBooking);
       activeBooking = newBooking;
 
-      for (Seat seat in activeBooking!.seats) {
-        seatCells[seat] =
-            seatCells[seat]!.updateWithValues(activeBooking, true);
-      }
+      newBooking.updateSeats(seatCells, newBooking, true);
 
       // force rebuild
       setState(() {});
@@ -91,9 +85,11 @@ class BookingViewState extends State<BookingsView> {
     }
   }
 
-  void onInput() {
-    // rebuild
-    setState(() {});
+  void onInput(Booking newBooking) {
+    setState(() {
+      activeBooking = newBooking;
+      newBooking.updateSeats(seatCells, newBooking, true);
+    });
   }
 
   BookingViewState()
@@ -154,9 +150,7 @@ class BookingViewState extends State<BookingsView> {
     };
 
     for (var booking in bookings) {
-      for (var seat in booking.seats) {
-        seatCells[seat] = seatCells[seat]!.updateWithValues(booking, false);
-      }
+      booking.updateSeats(seatCells, booking, false);
     }
     setState(() {});
   }
