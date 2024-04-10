@@ -17,12 +17,16 @@ jobs:
           channel: stable
       - run: flutter build windows
 
-      - uses: actions/checkout@master
-      - name: Build Tag
-        uses: laputansoft/github-tag-action@v4.6
+      - name: Check out code
+        uses: actions/checkout@master
         with:
-          github_token: ${{ env.github-token }}
-          tag: ${{ steps.package-version.outputs.version }}
+          fetch-depth: '0'
+
+      - name: Bump version and push tag
+        uses: ChloePlanet/github-tag-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
 
       - name: Build Release
         uses: softprops/action-gh-release@v2
