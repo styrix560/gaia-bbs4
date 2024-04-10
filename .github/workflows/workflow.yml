@@ -22,7 +22,7 @@ jobs:
       - name: Compress Build Folder
         run: |
           cp build\windows\x64\runner\Release\ .\bbs4
-          tar -a -c -f bbs4.zip bbs4
+          tar -a -c -f bbs4.zip build\windows\x64\runner\Release
 
       - name: Create Release
         id: create_release
@@ -30,7 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: latest-${{ github.ref }}
+          tag_name: latest-${{ github.sha }}
           release_name: latest release
           draft: false
           prerelease: false
