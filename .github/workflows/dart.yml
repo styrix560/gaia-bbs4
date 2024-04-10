@@ -16,3 +16,6 @@ jobs:
         with:
           channel: stable
       - run: flutter build windows
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
