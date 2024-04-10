@@ -17,5 +17,12 @@ jobs:
           channel: stable
       - run: flutter build windows
 
-      - name: Release
+      - uses: actions/checkout@master
+      - name: Build Tag
+        uses: laputansoft/github-tag-action@v4.6
+        with:
+          github_token: ${{ env.github-token }}
+          tag: ${{ steps.package-version.outputs.version }}
+
+      - name: Build Release
         uses: softprops/action-gh-release@v2
