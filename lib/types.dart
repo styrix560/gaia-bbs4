@@ -18,11 +18,9 @@ class Booking {
         (a, b) => a.toString().compareTo(b.toString()),
       );
 
-  void updateSeats(Map<Seat, SeatCellWidget> seatCells, Booking booking,
-      bool isActive) {
+  void updateSeats(Map<Seat, SeatCellWidget> seatCells, bool isActive) {
     for (var seat in seats) {
-      seatCells[seat] =
-          seatCells[seat]!.updateWithValues(booking, isActive);
+      seatCells[seat] = seatCells[seat]!.updateWithValues(this, isActive);
     }
   }
 

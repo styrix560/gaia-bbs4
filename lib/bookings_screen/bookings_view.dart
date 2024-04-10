@@ -1,16 +1,14 @@
 import 'package:bbs4/bookings_screen/edit_booking.dart';
 import 'package:bbs4/bookings_screen/seat_cell.dart';
 import 'package:bbs4/types.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:bbs4/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:uuid/uuid.dart';
 
 import '../grid_definition.dart';
 
 class BookingsView extends StatefulWidget {
   final bool isAfternoon;
-
   final Uuid uuid = const Uuid();
 
   const BookingsView({super.key, required this.isAfternoon});
@@ -28,6 +26,7 @@ class BookingViewState extends State<BookingsView> {
 
   // UI-variables
   Map<Seat, SeatCellWidget> seatCells;
+  late EditBookingWidget editBookingWidget;
 
   initActiveBooking([Seat? seat]) {
     setState(() {
@@ -41,20 +40,21 @@ class BookingViewState extends State<BookingsView> {
     List<Booking> clickedBookings =
         bookings.where((element) => element.seats.contains(seat)).toList();
     assert(clickedBookings.length < 2);
-    if (clickedBookings.length == 1) {
-      // add activeBooking into the bookings-list
-      bookings.add(activeBooking!);
 
-      // update the seats from the previously active booking to be a normal booking
+    if (clickedBookings.length == 1) {
       if (activeBooking != null) {
-        activeBooking!.updateSeats(seatCells, activeBooking!, false);
+        bookings.add(activeBooking!);
+
+        activeBooking!.updateSeats(seatCells, false);
       }
 
       var newBooking = clickedBookings.first;
       bookings.remove(newBooking);
       activeBooking = newBooking;
 
-      newBooking.updateSeats(seatCells, newBooking, true);
+      newBooking.updateSeats(seatCells, true);
+
+      editBookingWidget.initialBooking.value = newBooking;
 
       // force rebuild
       setState(() {});
@@ -68,6 +68,7 @@ class BookingViewState extends State<BookingsView> {
           activeBooking,
           true,
         );
+        editBookingWidget.initialBooking.value = activeBooking;
       });
       return;
     }
@@ -88,7 +89,7 @@ class BookingViewState extends State<BookingsView> {
   void onInput(Booking newBooking) {
     setState(() {
       activeBooking = newBooking;
-      newBooking.updateSeats(seatCells, newBooking, true);
+      newBooking.updateSeats(seatCells, true);
     });
   }
 
@@ -124,18 +125,24 @@ class BookingViewState extends State<BookingsView> {
         Row(
           children: [
             Spacer(),
-            OutlinedButton(
-                onPressed: () {
-                  if (activeBooking == null) return;
-                  bookings.add(activeBooking!);
+            FilledButton(
+                onPressed: activeBooking == null
+                    ? null
+                    : () {
+                        if (activeBooking == null) return;
+                        bookings.add(activeBooking!);
 
-                  activeBooking!.updateSeats(seatCells, activeBooking!, false);
-                  activeBooking = null;
-                  setState(() {});
-                },
-                child: Text("Buchung deaktivieren"))
+                        activeBooking!.updateSeats(seatCells, false);
+                        activeBooking = null;
+                        editBookingWidget.initialBooking.value = null;
+                        setState(() {});
+                      },
+                child: Text(
+                  "Buchung speichern",
+                ))
           ],
         ),
+        context.space(0, 16),
         for (final rect in bookingsDefinition)
           for (var y = 0; y < rect.height; y++, yAll++)
             Row(
@@ -146,7 +153,7 @@ class BookingViewState extends State<BookingsView> {
                 ...addPadding(rect.width),
               ],
             ),
-        EditBookingWidget(activeBooking, onInput)
+        editBookingWidget
       ],
     );
   }
@@ -165,8 +172,11 @@ class BookingViewState extends State<BookingsView> {
     };
 
     for (var booking in bookings) {
-      booking.updateSeats(seatCells, booking, false);
+      booking.updateSeats(seatCells, false);
     }
+
+    editBookingWidget = EditBookingWidget(activeBooking, onInput);
+
     setState(() {});
   }
 }
