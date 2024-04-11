@@ -18,6 +18,8 @@ class EditBookingWidget extends StatefulWidget {
 
 class EditBookingWidgetState extends State<EditBookingWidget> {
   late final TextEditingController lastName;
+  late final TextEditingController firstName;
+  late final TextEditingController className;
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +31,9 @@ class EditBookingWidgetState extends State<EditBookingWidget> {
         onChanged: () {
           widget.onInput(Booking(
               widget.initialBooking.value!.id,
-              widget.initialBooking.value!.firstName,
+              firstName.text,
               lastName.text,
-              widget.initialBooking.value!.className,
+              className.text,
               widget.initialBooking.value!.seats,
               widget.initialBooking.value!.paidAmount,
               widget.initialBooking.value!.priceType));
@@ -40,17 +42,44 @@ class EditBookingWidgetState extends State<EditBookingWidget> {
           children: [
             context.space(0, 32),
             Expanded(
+              flex: 2,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   key: ValueKey(widget.initialBooking),
-                  decoration: InputDecoration(label: Text("Nachname")),
+                  decoration: const InputDecoration(label: Text("Vorname")),
+                  controller: firstName,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  key: ValueKey(widget.initialBooking),
+                  decoration: const InputDecoration(label: Text("Nachname")),
                   controller: lastName,
                 ),
               ),
-            )
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  key: ValueKey(widget.initialBooking),
+                  decoration: const InputDecoration(label: Text("Klasse")),
+                  controller: className,
+                ),
+              ),
+            ),
           ],
         ),
+        // Row(
+        //   children: [
+        //     Expanded(child: Padding(padding: EdgeInsets.all(8),))
+        //   ],
+        // ),
       );
     }
   }
@@ -60,6 +89,10 @@ class EditBookingWidgetState extends State<EditBookingWidget> {
     super.initState();
     lastName =
         TextEditingController(text: widget.initialBooking.value?.lastName);
+    firstName =
+        TextEditingController(text: widget.initialBooking.value?.firstName);
+    className =
+        TextEditingController(text: widget.initialBooking.value?.className);
 
     widget.initialBooking.addListener(() {
       if (widget.initialBooking.value == null) {
@@ -69,6 +102,8 @@ class EditBookingWidgetState extends State<EditBookingWidget> {
       }
       setState(() {
         lastName.text = widget.initialBooking.value?.lastName ?? "";
+        firstName.text = widget.initialBooking.value?.firstName ?? "";
+        lastName.text = widget.initialBooking.value?.className ?? "";
       });
     });
   }

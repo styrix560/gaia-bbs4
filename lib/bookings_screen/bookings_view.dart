@@ -75,6 +75,10 @@ class BookingViewState extends State<BookingsView> {
     if (activeBooking!.seats.contains(seat)) {
       setState(() {
         activeBooking!.seats.remove(seat);
+        if (activeBooking!.seats.isEmpty) {
+          activeBooking = null;
+          editBookingWidget.initialBooking.value = null;
+        }
         seatCells[seat] = seatCells[seat]!.updateWithValues(null, false);
       });
     } else {
@@ -110,12 +114,9 @@ class BookingViewState extends State<BookingsView> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> addPadding(int rectWidth) {
-      return [
-        if ((maxRowLength + rectWidth) % 2 != 0) const Spacer(),
-        for (var x = 0; x < (maxRowLength - rectWidth) / 2; x++)
-          const Spacer(flex: 2),
-      ];
+    Widget addPadding(int rectWidth) {
+      return Expanded(
+          flex: maxRowLength - rectWidth, child: SizedBox(height: 10));
     }
 
     var yAll = 0;
@@ -148,9 +149,9 @@ class BookingViewState extends State<BookingsView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ...addPadding(rect.width),
+                addPadding(rect.width),
                 for (var x = 0; x < rect.width; x++) seatCells[Seat(yAll, x)]!,
-                ...addPadding(rect.width),
+                addPadding(rect.width),
               ],
             ),
         editBookingWidget
