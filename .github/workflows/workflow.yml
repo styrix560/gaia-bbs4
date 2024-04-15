@@ -21,7 +21,7 @@ jobs:
 
       - name: Compress Build Folder
         run: |
-          cp build\windows\x64\runner\Release\* .\bbs4
+          xopcy \S build\windows\x64\runner\Release\ .\bbs4
           tar -a -c -f bbs4.zip bbs4
 
       - name: Create Release
