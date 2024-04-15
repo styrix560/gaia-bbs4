@@ -4,7 +4,6 @@ import "package:flutter_hooks/flutter_hooks.dart";
 import "package:supernova/supernova.dart";
 
 import "widgets/bookings_view.dart";
-import "wrapper.dart";
 
 // TODO(styrix): add printing of overview
 Future<void> main() async {
@@ -23,6 +22,17 @@ class MainApp extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Wrapper("Buchungsübersicht", BookingsView(isAfternoon: false));
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Benefiz Buchungs System 4",
+          style: TextStyle(fontSize: 15),
+        ),
+      ),
+      body: const Padding(
+        padding: EdgeInsets.all(8),
+        child: SingleChildScrollView(child: BookingsView(isAfternoon: false)),
+      ),
+    );
   }
 }
