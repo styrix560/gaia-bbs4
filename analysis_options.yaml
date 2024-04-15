@@ -1,1 +1,8 @@
-include: package:flutter_lints/flutter.yaml
+include: package:supernova/lints.yaml
+#include package: flutter/lints
+linter:
+  rules:
+    prefer_double_quotes: true
+    prefer_single_quotes: false
+    require_trailing_commas: false
+    prefer-trailing-comma: false

@@ -1,18 +1,25 @@
-import 'package:bbs4/wrapper.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:uuid/uuid.dart';
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
+import "package:supernova/supernova.dart";
 
-import 'bookings_screen/bookings_view.dart';
+import "widgets/bookings_view.dart";
+import "wrapper.dart";
 
-void main() {
+// TODO(styrix): add printing of overview
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await initSupernova(
+    shouldInitializeTimeMachine: false,
+    minLogLevel: kDebugMode ? LogLevel.trace : LogLevel.config,
+  );
+
   runApp(const MaterialApp(home: MainApp()));
 }
 
 class MainApp extends HookWidget {
   const MainApp({super.key});
-
-  final uuid = const Uuid();
 
   @override
   Widget build(BuildContext context) {
