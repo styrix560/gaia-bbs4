@@ -21,7 +21,7 @@ jobs:
 
       - name: Compress Build Folder
         run: |
-          xcopy /S build\windows\x64\runner\Release\ .\bbs4
+          xcopy /S build\windows\x64\runner\Release\ .\bbs4\
           powershell Compress-Archive .\bbs4 bbs4.zip
 
       - name: Create Release
