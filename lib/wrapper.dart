@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
+// TODO(styrix): remove the wrapper class
 class Wrapper extends StatelessWidget {
+  const Wrapper(this.title, this.child, {super.key});
+
   final String title;
   final Widget child;
-
-  const Wrapper(this.title, this.child, {super.key});
 
   @override
   Widget build(BuildContext context) {

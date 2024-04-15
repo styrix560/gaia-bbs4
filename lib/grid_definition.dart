@@ -1,10 +1,10 @@
 import "package:collection/collection.dart";
 
 class Rectangle {
+  const Rectangle(this.width, this.height);
+
   final int width;
   final int height;
-
-  const Rectangle(this.width, this.height);
 }
 
 const List<Rectangle> bookingsDefinition = [
@@ -14,4 +14,4 @@ const List<Rectangle> bookingsDefinition = [
   Rectangle(18, 1),
 ];
 
-int maxRowLength = bookingsDefinition.map((e) => e.width).max;
+int get maxRowLength => bookingsDefinition.map((e) => e.width).max;
