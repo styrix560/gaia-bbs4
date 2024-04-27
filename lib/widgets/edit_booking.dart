@@ -8,25 +8,33 @@ import "price_paid.dart";
 class EditBookingWidget extends HookWidget {
   EditBookingWidget({super.key});
 
-  int numberOfSeat = 0;
-  PriceType priceType = PriceType.normal;
-
   @override
   Widget build(BuildContext context) {
     final formKey = useMemoized(GlobalKey<FormState>.new);
     final rebuild = useRebuild();
+    final globalData = GlobalData();
+
+    final numberOfSeat = useState(globalData.activeBooking?.seats.length ?? 0);
+    final priceType =
+        useState(globalData.activeBooking?.priceType ?? PriceType.normal);
 
     final lastName = useTextEditingController();
     final firstName = useTextEditingController();
     final className = useTextEditingController();
 
-    final globalData = GlobalData();
+    void onPriceTypeChanged(PriceType? value) {
+      if (value == null || value == priceType.value) return;
+      globalData.updateActiveBooking(
+        priceType: value,
+      );
+      priceType.value = value;
+    }
 
     void updateState() {
       firstName.text = globalData.activeBooking?.firstName ?? firstName.text;
       lastName.text = globalData.activeBooking?.lastName ?? lastName.text;
       className.text = globalData.activeBooking?.className ?? className.text;
-      numberOfSeat = globalData.activeBooking?.seats.length ?? 0;
+      numberOfSeat.value = globalData.activeBooking?.seats.length ?? 0;
     }
 
     useEffect(() {
@@ -92,7 +100,7 @@ class EditBookingWidget extends HookWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("Sitze bestellt: $numberOfSeat",
+                  Text("Sitze bestellt: ${numberOfSeat.value}",
                       style: const TextStyle(fontSize: 18)),
                   const VerticalDivider(
                     width: 32,
@@ -108,29 +116,23 @@ class EditBookingWidget extends HookWidget {
                       Row(
                         children: [
                           DropdownButton(
-                            value: priceType,
+                            value: priceType.value,
                             focusColor: Colors.transparent,
                             padding: const EdgeInsets.only(left: 8, right: 8),
                             items: <DropdownMenuItem<PriceType>>[
                               for (final PriceType priceType
                                   in PriceType.values)
                                 DropdownMenuItem(
-                                    value: priceType,
-                                    child: Text(priceType.name),
+                                  value: priceType,
+                                  child: Text(priceType.name),
                                 ),
                             ],
-                            onChanged: (value) {
-                              if (value == null || value == priceType) return;
-                              globalData.updateActiveBooking(
-                                priceType: value,
-                              );
-                              priceType = value;
-                            },
+                            onChanged: onPriceTypeChanged,
                           ),
                           space(width: 16),
                           // TODO: isAfternoon
                           Text(
-                              "${priceType.calculatePrice(
+                              "${priceType.value.calculatePrice(
                                 isAfternoon: false,
                               )}€ pro Sitz",
                               style: const TextStyle(fontSize: 18)),

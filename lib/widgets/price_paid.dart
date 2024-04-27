@@ -7,12 +7,17 @@ import "../types.dart";
 class PaidPriceWidget extends HookWidget {
   const PaidPriceWidget({super.key});
 
+
+  // TODO(styrix): isAfternoon
+  int get pricePerSeat =>
+      GlobalData().activeBooking!.priceType.calculatePrice(isAfternoon: false);
+
   @override
   Widget build(BuildContext context) {
     final globalData = GlobalData();
     final pricePaid = useState(globalData.activeBooking?.pricePaid ?? 0);
     final controller =
-        useTextEditingController(text: pricePaid.value.toString());
+    useTextEditingController(text: pricePaid.value.toString());
 
     useEffect(() {
       void listener() {
@@ -41,10 +46,6 @@ class PaidPriceWidget extends HookWidget {
         globalData.removeListener(listener);
       };
     });
-
-    // TODO(styrix): isAfternoon
-    final pricePerSeat =
-        globalData.activeBooking!.priceType.calculatePrice(isAfternoon: false);
 
     void decrementPrice() {
       if (pricePaid.value <= 0) return;
