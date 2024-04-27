@@ -9,9 +9,10 @@ class PaidPriceWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = useTextEditingController(text: "0");
-    final pricePaid = useState(0);
     final globalData = GlobalData();
+    final pricePaid = useState(globalData.activeBooking?.pricePaid ?? 0);
+    final controller =
+        useTextEditingController(text: pricePaid.value.toString());
 
     useEffect(() {
       void listener() {
@@ -23,12 +24,27 @@ class PaidPriceWidget extends HookWidget {
       return () => pricePaid.removeListener(listener);
     });
 
+    useEffect(() {
+      void listener() {
+        if (!globalData.isBookingActive) return;
+        if (globalData.activeBooking!.pricePaid != pricePaid.value) {
+          pricePaid.value = globalData.activeBooking!.pricePaid;
+        }
+        if (controller.text != pricePaid.value.toString()) {
+          controller.text = pricePaid.value.toString();
+        }
+      }
+
+      globalData.addListener(listener);
+      return () {
+        logger.debug("removed global listener");
+        globalData.removeListener(listener);
+      };
+    });
+
     // TODO(styrix): isAfternoon
     final pricePerSeat =
         globalData.activeBooking!.priceType.calculatePrice(isAfternoon: false);
-
-    // rebuild whenever global data changes
-    useListenable(globalData);
 
     void decrementPrice() {
       if (pricePaid.value <= 0) return;
