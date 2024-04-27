@@ -28,11 +28,12 @@ class BookingsView extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final seatCells = useRef(initSeatCells());
+    final globalData = GlobalData();
+    useListenableSelector(globalData, () => globalData.isBookingActive);
 
     final maxRowLength = rowWidths.max;
 
     // TODO(styrix): use "Rang" instead of "R" for ranks 21 or higher
-    final globalData = GlobalData();
     return Column(
       children: [
         Row(
