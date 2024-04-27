@@ -93,30 +93,30 @@ class EditBookingWidget extends HookWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text("Sitze bestellt: $numberOfSeat",
-                      style: TextStyle(fontSize: 18)),
-                  VerticalDivider(
+                      style: const TextStyle(fontSize: 18)),
+                  const VerticalDivider(
                     width: 32,
                   ),
                   const PaidPriceWidget(),
-                  VerticalDivider(
+                  const VerticalDivider(
                     width: 32,
                   ),
                   Column(
                     children: [
-                      Text("Preisart", style: TextStyle(fontSize: 18)),
-                      space(height: 8),
+                      const Text("Preisart", style: TextStyle(fontSize: 18)),
+                      space(),
                       Row(
                         children: [
                           DropdownButton(
                             value: priceType,
                             focusColor: Colors.transparent,
-                            padding: EdgeInsets.only(left: 8, right: 8),
+                            padding: const EdgeInsets.only(left: 8, right: 8),
                             items: <DropdownMenuItem<PriceType>>[
                               for (final PriceType priceType
                                   in PriceType.values)
                                 DropdownMenuItem(
-                                    child: Text(priceType.name),
                                     value: priceType,
+                                    child: Text(priceType.name),
                                 ),
                             ],
                             onChanged: (value) {
@@ -133,7 +133,7 @@ class EditBookingWidget extends HookWidget {
                               "${priceType.calculatePrice(
                                 isAfternoon: false,
                               )}€ pro Sitz",
-                              style: TextStyle(fontSize: 18)),
+                              style: const TextStyle(fontSize: 18)),
                         ],
                       ),
                     ],
@@ -164,7 +164,7 @@ class EditBookingWidget extends HookWidget {
             padding: const EdgeInsets.all(8),
             child: Column(
               children: [
-                Text("Buchung ändern", style: TextStyle(fontSize: 20)),
+                const Text("Buchung ändern", style: TextStyle(fontSize: 20)),
                 buildForm(),
               ],
             ),

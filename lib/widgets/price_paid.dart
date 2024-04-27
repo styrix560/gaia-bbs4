@@ -52,13 +52,12 @@ class PaidPriceWidget extends HookWidget {
           children: [
             IconButton(
               onPressed: incrementPrice,
-              icon: Icon(
+              icon: const Icon(
                 size: 35,
                 Icons.add,
               ),
             ),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
                   width: 100,
@@ -70,14 +69,14 @@ class PaidPriceWidget extends HookWidget {
                         filled: !controller.text.isInt,
                         fillColor: Colors.red,
                       ),
-                      style: TextStyle(fontSize: 18)),
+                      style: const TextStyle(fontSize: 18)),
                 ),
-                Text("€"),
+                const Text("€"),
               ],
             ),
             IconButton(
               onPressed: decrementPrice,
-              icon: Icon(
+              icon: const Icon(
                 size: 35,
                 Icons.remove,
               ),
