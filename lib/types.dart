@@ -26,8 +26,13 @@ class Booking {
   int getPrice({required bool isAfternoon}) =>
       priceType.calculatePrice(isAfternoon: isAfternoon) * seats.length;
 
-  List<Seat> getSeatsSorted() => IterableExtension(seats).sortedBy(
-        (element) => element.toString(),
+  List<Seat> getSeatsSorted() => IterableExtension(seats).sorted(
+        (a, b) {
+          if (a.row == b.row) {
+            return a.seat.compareTo(b.seat);
+          }
+          return a.row.compareTo(b.row);
+        },
       );
 }
 
