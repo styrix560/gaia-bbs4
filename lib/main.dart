@@ -14,7 +14,9 @@ Future<void> main() async {
     minLogLevel: kDebugMode ? LogLevel.trace : LogLevel.config,
   );
 
-  runApp(const MaterialApp(home: MainApp()));
+  runApp(const MaterialApp(
+    home: MainApp(),
+  ));
 }
 
 class MainApp extends HookWidget {

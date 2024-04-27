@@ -39,7 +39,7 @@ sealed class ActiveBookingEventArgs with _$ActiveBookingEventArgs {
     String? firstName,
     String? lastName,
     String? className,
-    int? paidAmount,
+    int? pricePaid,
     PriceType? priceType,
   }) = ActiveBookingUpdatedEventArgs;
 }

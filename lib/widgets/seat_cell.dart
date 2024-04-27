@@ -35,17 +35,19 @@ class SeatCellWidget extends StatelessWidget {
     final seat = Seat(y, x);
 
     Color getColor() {
-      if (isActive) return Colors.lightBlue.shade50;
+      // TODO(styrix): also show paid seats for active bookings
       if (booking == null) return Colors.green;
 
-      final amountOfPaidSeats = booking!.paidAmount /
-          booking!.getPrice(isAfternoon: isAfternoon) *
-          booking!.seats.length;
+      // TODO: isAfternoon
+      final pricePerSeat =
+          booking!.priceType.calculatePrice(isAfternoon: false);
+      final amountOfPaidSeats =
+          pricePerSeat == 0 ? 1000 : booking!.pricePaid ~/ pricePerSeat;
 
       if (booking!.getSeatsSorted().indexOf(seat) < amountOfPaidSeats) {
-        return Colors.red;
+        return isActive ? Colors.blue.shade800 : Colors.red;
       } else {
-        return Colors.yellow;
+        return isActive ? Colors.blue.shade200 : Colors.yellow;
       }
     }
 

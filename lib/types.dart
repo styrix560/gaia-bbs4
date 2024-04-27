@@ -4,6 +4,8 @@ import "package:supernova/supernova.dart" hide ValueChanged;
 import "event_notifier.dart";
 import "widgets/seat_cell.dart";
 
+// TODO(styrix): split this file up into parts
+
 class Booking {
   const Booking(
     this.id,
@@ -11,7 +13,7 @@ class Booking {
     this.lastName,
     this.className,
     this.seats,
-    this.paidAmount,
+    this.pricePaid,
     this.priceType,
   );
 
@@ -20,7 +22,7 @@ class Booking {
   final String lastName;
   final String className;
   final Set<Seat> seats;
-  final int paidAmount;
+  final int pricePaid;
   final PriceType priceType;
 
   // TODO(styrix): make isAfternoon enum
@@ -35,18 +37,19 @@ class Booking {
     String? firstName,
     String? lastName,
     String? className,
-    int? paidAmount,
+    int? pricePaid,
     PriceType? priceType,
-  }) =>
-      Booking(
-        id,
-        firstName ?? this.firstName,
-        lastName ?? this.lastName,
-        className ?? this.className,
-        seats,
-        paidAmount ?? this.paidAmount,
-        priceType ?? this.priceType,
-      );
+  }) {
+    return Booking(
+      id,
+      firstName ?? this.firstName,
+      lastName ?? this.lastName,
+      className ?? this.className,
+      seats,
+      pricePaid ?? this.pricePaid,
+      priceType ?? this.priceType,
+    );
+  }
 
   // TODO(styrix): make this an extension on seatCells
   void updateSeats(
@@ -154,7 +157,7 @@ class GlobalData {
         "Mustermann",
         "7A",
         {const Seat(0, 9), const Seat(0, 10), const Seat(0, 11)},
-        15,
+        40,
         PriceType.normal,
       ),
       Booking(
@@ -163,7 +166,7 @@ class GlobalData {
         "VIP",
         "important class",
         {const Seat(0, 0), const Seat(0, 1)},
-        30,
+        40,
         PriceType.normal,
       ),
     ],
@@ -183,12 +186,12 @@ class GlobalData {
 
   List<Booking> get bookings => _bookings;
 
-  VoidCallback activeBookingAddListener<E extends ActiveBookingEventArgs>(
+  VoidCallback activeBookingListen<E extends ActiveBookingEventArgs>(
     ValueChanged<E> listener,
   ) =>
       _eventNotifiers.activeBooking.addListener<E>(listener);
 
-  VoidCallback bookingsAddListener<E extends BookingsEventArgs>(
+  VoidCallback bookingsListen<E extends BookingsEventArgs>(
     ValueChanged<E> listener,
   ) =>
       _eventNotifiers.bookings.addListener<E>(listener);
@@ -210,22 +213,24 @@ class GlobalData {
     String? firstName,
     String? lastName,
     String? className,
-    int? paidAmount,
+    int? pricePaid,
     PriceType? priceType,
   }) {
-    _activeBooking = _activeBooking!.update(
+    final newBooking = _activeBooking!.update(
       firstName: firstName,
       lastName: lastName,
       className: className,
-      paidAmount: paidAmount,
+      pricePaid: pricePaid,
       priceType: priceType,
     );
+    if (newBooking == _activeBooking) return;
+    _activeBooking = newBooking;
     _eventNotifiers.activeBooking
         .notifyListeners(ActiveBookingEventArgs.updated(
       firstName: firstName,
       lastName: lastName,
       className: className,
-      paidAmount: paidAmount,
+      pricePaid: pricePaid,
       priceType: priceType,
     ));
   }

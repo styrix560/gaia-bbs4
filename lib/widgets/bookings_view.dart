@@ -23,7 +23,7 @@ class BookingViewState extends State<BookingsView> {
 
   // UI-variables
   Map<Seat, SeatCellWidget> seatCells;
-  late EditBookingWidget editBookingWidget;
+  late final EditBookingWidget editBookingWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class BookingViewState extends State<BookingsView> {
             ),
           ],
         ),
-        space(0, 16),
+        space(height: 16),
         for (final rect in bookingsDefinition)
           for (var y = 0; y < rect.height; y++, yAll++)
             Row(
@@ -67,7 +67,7 @@ class BookingViewState extends State<BookingsView> {
   void initCallbacks() {
     // TODO(styrix): dispose these callbacks
     final globalData = GlobalData();
-    globalData.activeBookingAddListener<ActiveBookingDeactivatedEventArgs>(
+    globalData.activeBookingListen<ActiveBookingDeactivatedEventArgs>(
       (eventArgs) {
         setState(() {
           eventArgs.oldBooking.updateSeats(seatCells, isActive: false);
@@ -75,19 +75,19 @@ class BookingViewState extends State<BookingsView> {
       },
     );
     globalData
-        .activeBookingAddListener<ActiveBookingActivatedEventArgs>((eventArgs) {
+        .activeBookingListen<ActiveBookingActivatedEventArgs>((eventArgs) {
       setState(() {
         eventArgs.newBooking.updateSeats(seatCells, isActive: true);
       });
     });
     globalData
-        .activeBookingAddListener<ActiveBookingDeletedEventArgs>((eventArgs) {
+        .activeBookingListen<ActiveBookingDeletedEventArgs>((eventArgs) {
       setState(() {
         eventArgs.oldBooking.updateSeats(seatCells, resetBooking: true);
       });
     });
     globalData
-        .activeBookingAddListener<ActiveBookingSeatAddedEventArgs>((eventArgs) {
+        .activeBookingListen<ActiveBookingSeatAddedEventArgs>((eventArgs) {
       setState(() {
         // ignore: avoid-collection-methods-with-unrelated-types
         eventArgs.newSeat.update(
@@ -98,12 +98,12 @@ class BookingViewState extends State<BookingsView> {
       });
     });
     globalData
-        .activeBookingAddListener<ActiveBookingCreatedEventArgs>((eventArgs) {
+        .activeBookingListen<ActiveBookingCreatedEventArgs>((eventArgs) {
       setState(() {
         eventArgs.activeBooking.updateSeats(seatCells, isActive: true);
       });
     });
-    globalData.activeBookingAddListener<ActiveBookingSeatRemovedEventArgs>(
+    globalData.activeBookingListen<ActiveBookingSeatRemovedEventArgs>(
       (eventArgs) => setState(() {
         eventArgs.oldSeat.update(
           seatCells,
@@ -113,13 +113,13 @@ class BookingViewState extends State<BookingsView> {
       }),
     );
     globalData
-        .activeBookingAddListener<ActiveBookingUpdatedEventArgs>((eventArgs) {
+        .activeBookingListen<ActiveBookingUpdatedEventArgs>((eventArgs) {
       setState(() {
         globalData.activeBooking!.updateSeats(seatCells, isActive: true);
       });
     });
 
-    globalData.bookingsAddListener<BookingsUpdated>((eventArgs) {
+    globalData.bookingsListen<BookingsUpdated>((eventArgs) {
       initSeatCells();
       for (final booking in eventArgs.newBookings) {
         booking.updateSeats(seatCells, isActive: false);
@@ -140,7 +140,7 @@ class BookingViewState extends State<BookingsView> {
       booking.updateSeats(seatCells, isActive: false);
     }
 
-    editBookingWidget = const EditBookingWidget();
+    editBookingWidget = EditBookingWidget();
   }
 
   void initSeatCells() {

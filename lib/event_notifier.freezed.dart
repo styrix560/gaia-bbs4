@@ -240,7 +240,7 @@ mixin _$ActiveBookingEventArgs {
     required TResult Function(Seat newSeat) seatAdded,
     required TResult Function(Seat oldSeat) seatRemoved,
     required TResult Function(String? firstName, String? lastName,
-            String? className, int? paidAmount, PriceType? priceType)
+            String? className, int? pricePaid, PriceType? priceType)
         updated,
   }) =>
       throw _privateConstructorUsedError;
@@ -253,7 +253,7 @@ mixin _$ActiveBookingEventArgs {
     TResult? Function(Seat newSeat)? seatAdded,
     TResult? Function(Seat oldSeat)? seatRemoved,
     TResult? Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
   }) =>
       throw _privateConstructorUsedError;
@@ -266,7 +266,7 @@ mixin _$ActiveBookingEventArgs {
     TResult Function(Seat newSeat)? seatAdded,
     TResult Function(Seat oldSeat)? seatRemoved,
     TResult Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
     required TResult orElse(),
   }) =>
@@ -406,7 +406,7 @@ class _$ActiveBookingActivatedEventArgsImpl
     required TResult Function(Seat newSeat) seatAdded,
     required TResult Function(Seat oldSeat) seatRemoved,
     required TResult Function(String? firstName, String? lastName,
-            String? className, int? paidAmount, PriceType? priceType)
+            String? className, int? pricePaid, PriceType? priceType)
         updated,
   }) {
     return activated(newBooking);
@@ -422,7 +422,7 @@ class _$ActiveBookingActivatedEventArgsImpl
     TResult? Function(Seat newSeat)? seatAdded,
     TResult? Function(Seat oldSeat)? seatRemoved,
     TResult? Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
   }) {
     return activated?.call(newBooking);
@@ -438,7 +438,7 @@ class _$ActiveBookingActivatedEventArgsImpl
     TResult Function(Seat newSeat)? seatAdded,
     TResult Function(Seat oldSeat)? seatRemoved,
     TResult Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
     required TResult orElse(),
   }) {
@@ -587,7 +587,7 @@ class _$ActiveBookingDeactivatedEventArgsImpl
     required TResult Function(Seat newSeat) seatAdded,
     required TResult Function(Seat oldSeat) seatRemoved,
     required TResult Function(String? firstName, String? lastName,
-            String? className, int? paidAmount, PriceType? priceType)
+            String? className, int? pricePaid, PriceType? priceType)
         updated,
   }) {
     return deactivated(oldBooking);
@@ -603,7 +603,7 @@ class _$ActiveBookingDeactivatedEventArgsImpl
     TResult? Function(Seat newSeat)? seatAdded,
     TResult? Function(Seat oldSeat)? seatRemoved,
     TResult? Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
   }) {
     return deactivated?.call(oldBooking);
@@ -619,7 +619,7 @@ class _$ActiveBookingDeactivatedEventArgsImpl
     TResult Function(Seat newSeat)? seatAdded,
     TResult Function(Seat oldSeat)? seatRemoved,
     TResult Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
     required TResult orElse(),
   }) {
@@ -768,7 +768,7 @@ class _$ActiveBookingCreatedEventArgsImpl
     required TResult Function(Seat newSeat) seatAdded,
     required TResult Function(Seat oldSeat) seatRemoved,
     required TResult Function(String? firstName, String? lastName,
-            String? className, int? paidAmount, PriceType? priceType)
+            String? className, int? pricePaid, PriceType? priceType)
         updated,
   }) {
     return created(activeBooking);
@@ -784,7 +784,7 @@ class _$ActiveBookingCreatedEventArgsImpl
     TResult? Function(Seat newSeat)? seatAdded,
     TResult? Function(Seat oldSeat)? seatRemoved,
     TResult? Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
   }) {
     return created?.call(activeBooking);
@@ -800,7 +800,7 @@ class _$ActiveBookingCreatedEventArgsImpl
     TResult Function(Seat newSeat)? seatAdded,
     TResult Function(Seat oldSeat)? seatRemoved,
     TResult Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
     required TResult orElse(),
   }) {
@@ -948,7 +948,7 @@ class _$ActiveBookingDeletedEventArgsImpl
     required TResult Function(Seat newSeat) seatAdded,
     required TResult Function(Seat oldSeat) seatRemoved,
     required TResult Function(String? firstName, String? lastName,
-            String? className, int? paidAmount, PriceType? priceType)
+            String? className, int? pricePaid, PriceType? priceType)
         updated,
   }) {
     return deleted(oldBooking);
@@ -964,7 +964,7 @@ class _$ActiveBookingDeletedEventArgsImpl
     TResult? Function(Seat newSeat)? seatAdded,
     TResult? Function(Seat oldSeat)? seatRemoved,
     TResult? Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
   }) {
     return deleted?.call(oldBooking);
@@ -980,7 +980,7 @@ class _$ActiveBookingDeletedEventArgsImpl
     TResult Function(Seat newSeat)? seatAdded,
     TResult Function(Seat oldSeat)? seatRemoved,
     TResult Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
     required TResult orElse(),
   }) {
@@ -1127,7 +1127,7 @@ class _$ActiveBookingSeatAddedEventArgsImpl
     required TResult Function(Seat newSeat) seatAdded,
     required TResult Function(Seat oldSeat) seatRemoved,
     required TResult Function(String? firstName, String? lastName,
-            String? className, int? paidAmount, PriceType? priceType)
+            String? className, int? pricePaid, PriceType? priceType)
         updated,
   }) {
     return seatAdded(newSeat);
@@ -1143,7 +1143,7 @@ class _$ActiveBookingSeatAddedEventArgsImpl
     TResult? Function(Seat newSeat)? seatAdded,
     TResult? Function(Seat oldSeat)? seatRemoved,
     TResult? Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
   }) {
     return seatAdded?.call(newSeat);
@@ -1159,7 +1159,7 @@ class _$ActiveBookingSeatAddedEventArgsImpl
     TResult Function(Seat newSeat)? seatAdded,
     TResult Function(Seat oldSeat)? seatRemoved,
     TResult Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
     required TResult orElse(),
   }) {
@@ -1307,7 +1307,7 @@ class _$ActiveBookingSeatRemovedEventArgsImpl
     required TResult Function(Seat newSeat) seatAdded,
     required TResult Function(Seat oldSeat) seatRemoved,
     required TResult Function(String? firstName, String? lastName,
-            String? className, int? paidAmount, PriceType? priceType)
+            String? className, int? pricePaid, PriceType? priceType)
         updated,
   }) {
     return seatRemoved(oldSeat);
@@ -1323,7 +1323,7 @@ class _$ActiveBookingSeatRemovedEventArgsImpl
     TResult? Function(Seat newSeat)? seatAdded,
     TResult? Function(Seat oldSeat)? seatRemoved,
     TResult? Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
   }) {
     return seatRemoved?.call(oldSeat);
@@ -1339,7 +1339,7 @@ class _$ActiveBookingSeatRemovedEventArgsImpl
     TResult Function(Seat newSeat)? seatAdded,
     TResult Function(Seat oldSeat)? seatRemoved,
     TResult Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
     required TResult orElse(),
   }) {
@@ -1421,7 +1421,7 @@ abstract class _$$ActiveBookingUpdatedEventArgsImplCopyWith<$Res> {
       {String? firstName,
       String? lastName,
       String? className,
-      int? paidAmount,
+      int? pricePaid,
       PriceType? priceType});
 }
 
@@ -1441,7 +1441,7 @@ class __$$ActiveBookingUpdatedEventArgsImplCopyWithImpl<$Res>
     Object? firstName = freezed,
     Object? lastName = freezed,
     Object? className = freezed,
-    Object? paidAmount = freezed,
+    Object? pricePaid = freezed,
     Object? priceType = freezed,
   }) {
     return _then(_$ActiveBookingUpdatedEventArgsImpl(
@@ -1457,9 +1457,9 @@ class __$$ActiveBookingUpdatedEventArgsImplCopyWithImpl<$Res>
           ? _value.className
           : className // ignore: cast_nullable_to_non_nullable
               as String?,
-      paidAmount: freezed == paidAmount
-          ? _value.paidAmount
-          : paidAmount // ignore: cast_nullable_to_non_nullable
+      pricePaid: freezed == pricePaid
+          ? _value.pricePaid
+          : pricePaid // ignore: cast_nullable_to_non_nullable
               as int?,
       priceType: freezed == priceType
           ? _value.priceType
@@ -1477,7 +1477,7 @@ class _$ActiveBookingUpdatedEventArgsImpl
       {this.firstName,
       this.lastName,
       this.className,
-      this.paidAmount,
+      this.pricePaid,
       this.priceType});
 
   @override
@@ -1487,13 +1487,13 @@ class _$ActiveBookingUpdatedEventArgsImpl
   @override
   final String? className;
   @override
-  final int? paidAmount;
+  final int? pricePaid;
   @override
   final PriceType? priceType;
 
   @override
   String toString() {
-    return 'ActiveBookingEventArgs.updated(firstName: $firstName, lastName: $lastName, className: $className, paidAmount: $paidAmount, priceType: $priceType)';
+    return 'ActiveBookingEventArgs.updated(firstName: $firstName, lastName: $lastName, className: $className, pricePaid: $pricePaid, priceType: $priceType)';
   }
 
   @override
@@ -1507,15 +1507,15 @@ class _$ActiveBookingUpdatedEventArgsImpl
                 other.lastName == lastName) &&
             (identical(other.className, className) ||
                 other.className == className) &&
-            (identical(other.paidAmount, paidAmount) ||
-                other.paidAmount == paidAmount) &&
+            (identical(other.pricePaid, pricePaid) ||
+                other.pricePaid == pricePaid) &&
             (identical(other.priceType, priceType) ||
                 other.priceType == priceType));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, firstName, lastName, className, paidAmount, priceType);
+      runtimeType, firstName, lastName, className, pricePaid, priceType);
 
   @JsonKey(ignore: true)
   @override
@@ -1535,10 +1535,10 @@ class _$ActiveBookingUpdatedEventArgsImpl
     required TResult Function(Seat newSeat) seatAdded,
     required TResult Function(Seat oldSeat) seatRemoved,
     required TResult Function(String? firstName, String? lastName,
-            String? className, int? paidAmount, PriceType? priceType)
+            String? className, int? pricePaid, PriceType? priceType)
         updated,
   }) {
-    return updated(firstName, lastName, className, paidAmount, priceType);
+    return updated(firstName, lastName, className, pricePaid, priceType);
   }
 
   @override
@@ -1551,10 +1551,10 @@ class _$ActiveBookingUpdatedEventArgsImpl
     TResult? Function(Seat newSeat)? seatAdded,
     TResult? Function(Seat oldSeat)? seatRemoved,
     TResult? Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
   }) {
-    return updated?.call(firstName, lastName, className, paidAmount, priceType);
+    return updated?.call(firstName, lastName, className, pricePaid, priceType);
   }
 
   @override
@@ -1567,12 +1567,12 @@ class _$ActiveBookingUpdatedEventArgsImpl
     TResult Function(Seat newSeat)? seatAdded,
     TResult Function(Seat oldSeat)? seatRemoved,
     TResult Function(String? firstName, String? lastName, String? className,
-            int? paidAmount, PriceType? priceType)?
+            int? pricePaid, PriceType? priceType)?
         updated,
     required TResult orElse(),
   }) {
     if (updated != null) {
-      return updated(firstName, lastName, className, paidAmount, priceType);
+      return updated(firstName, lastName, className, pricePaid, priceType);
     }
     return orElse();
   }
@@ -1631,13 +1631,13 @@ abstract class ActiveBookingUpdatedEventArgs implements ActiveBookingEventArgs {
       {final String? firstName,
       final String? lastName,
       final String? className,
-      final int? paidAmount,
+      final int? pricePaid,
       final PriceType? priceType}) = _$ActiveBookingUpdatedEventArgsImpl;
 
   String? get firstName;
   String? get lastName;
   String? get className;
-  int? get paidAmount;
+  int? get pricePaid;
   PriceType? get priceType;
   @JsonKey(ignore: true)
   _$$ActiveBookingUpdatedEventArgsImplCopyWith<

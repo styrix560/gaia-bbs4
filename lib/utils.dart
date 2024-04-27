@@ -5,5 +5,5 @@ extension BuildExt on BuildContext {
       .pushReplacement(MaterialPageRoute<void>(builder: (_) => widget));
 }
 
-Widget space([double width = 0, double height = 9]) =>
+Widget space({double width = 0, double height = 8}) =>
     SizedBox(width: width, height: height);
