@@ -41,30 +41,47 @@ class SeatCellWidget extends HookWidget {
     });
 
     Color getColor() {
-      if (!globalData.isBookingActive ||
-          !globalData.activeBooking!.seats.contains(seat)) return Colors.green;
+      Color getColorForBooking(
+          Booking booking, Color colorIfPaid, Color colorIfNotPaid) {
+        // TODO: isAfternoon
+        final pricePerSeat =
+            booking.priceType.calculatePrice(isAfternoon: false);
+        final amountOfPaidSeats =
+            pricePerSeat == 0 ? 1000 : booking.pricePaid ~/ pricePerSeat;
 
-      // TODO: isAfternoon
-      final pricePerSeat =
-          activeBooking!.priceType.calculatePrice(isAfternoon: false);
-      final amountOfPaidSeats =
-          pricePerSeat == 0 ? 1000 : activeBooking.pricePaid ~/ pricePerSeat;
-
-      if (activeBooking.getSeatsSorted().indexOf(seat) < amountOfPaidSeats) {
-        return globalData.isBookingActive ? Colors.blue.shade800 : Colors.red;
-      } else {
-        return globalData.isBookingActive
-            ? Colors.blue.shade200
-            : Colors.yellow;
+        return booking.getSeatsSorted().indexOf(seat) < amountOfPaidSeats
+            ? colorIfPaid
+            : colorIfNotPaid;
       }
+
+      if (globalData.activeBooking?.seats.contains(seat) ?? false) {
+        return getColorForBooking(
+          activeBooking!,
+          Colors.blue.shade800,
+          Colors.blue.shade200,
+        );
+      }
+
+      final bookings = globalData.getBookingsContainingSeat(seat);
+      if (bookings.length == 2) return Colors.purple;
+      if (bookings.isEmpty) return Colors.green;
+
+      final booking = bookings.first;
+      return getColorForBooking(
+        booking,
+        Colors.red,
+        Colors.yellow,
+      );
     }
 
     String getText() {
-      if (!globalData.isBookingActive ||
-          !globalData.activeBooking!.seats.contains(seat)) {
-        return seat.toString();
+      if (globalData.activeBooking?.seats.contains(seat) ?? false) {
+        return activeBooking!.lastName;
       }
-      return activeBooking!.lastName;
+      final bookings = globalData.getBookingsContainingSeat(seat);
+      return bookings.isEmpty
+          ? seat.toString()
+          : bookings.map((e) => e.lastName).join("/");
     }
 
     return Expanded(
@@ -90,7 +107,7 @@ class SeatCellWidget extends HookWidget {
 
   void onClick(Seat seat) {
     final globalData = GlobalData();
-    final clickedBookings = globalData.findClickedBookings(seat);
+    final clickedBookings = globalData.getBookingsContainingSeat(seat);
     // TODO(styrix): handle more than one booking per seat
     assert(clickedBookings.length < 2);
 

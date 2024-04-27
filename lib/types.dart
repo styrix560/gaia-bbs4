@@ -152,7 +152,7 @@ class GlobalData extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Booking> findClickedBookings(Seat seat) {
+  List<Booking> getBookingsContainingSeat(Seat seat) {
     return bookings.where((element) => element.seats.contains(seat)).toList();
   }
 
