@@ -35,6 +35,7 @@ class EditBookingWidget extends HookWidget {
       lastName.text = globalData.activeBooking?.lastName ?? lastName.text;
       className.text = globalData.activeBooking?.className ?? className.text;
       numberOfSeat.value = globalData.activeBooking?.seats.length ?? 0;
+      priceType.value = globalData.activeBooking?.priceType ?? PriceType.normal;
     }
 
     useEffect(() {
