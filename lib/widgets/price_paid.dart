@@ -1,94 +1,49 @@
 import "package:flutter/material.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 import "package:supernova/supernova.dart";
 
-import "../event_notifier.dart";
 import "../types.dart";
 
-class PaidPriceWidget extends StatefulWidget {
+class PaidPriceWidget extends HookWidget {
   const PaidPriceWidget({super.key});
 
   @override
-  State<PaidPriceWidget> createState() => _PaidPriceWidgetState();
-}
-
-class _PaidPriceWidgetState extends State<PaidPriceWidget> {
-  late TextEditingController controller;
-  ValueNotifier<int> pricePaid = ValueNotifier(0);
-  int pricePerSeat = 20;
-
-  final List<VoidCallback> removeCallbacks = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller = TextEditingController(text: "0");
-
-    controller.addListener(() {
-      setState(() {
-        final valueChanged =
-            pricePaid.value.toString() != controller.value.text;
-        if (valueChanged && controller.value.text.isInt) {
-          pricePaid.value = controller.value.text.toInt();
-        }
-      });
-    });
+  Widget build(BuildContext context) {
+    final controller = useTextEditingController(text: "0");
+    final pricePaid = useState(0);
     final globalData = GlobalData();
 
-    pricePaid.addListener(() {
-      controller.text = pricePaid.value.toString();
-      globalData.updateActiveBooking(pricePaid: pricePaid.value);
-    });
-
-    removeCallbacks.add(globalData
-        .activeBookingListen<ActiveBookingActivatedEventArgs>((eventArgs) {
-      setState(() {
-        pricePaid.value = eventArgs.newBooking.pricePaid;
-        // TODO: isAfternoon
-        pricePerSeat =
-            eventArgs.newBooking.priceType.calculatePrice(isAfternoon: false);
-      });
-    }));
-    removeCallbacks.add(globalData
-        .activeBookingListen<ActiveBookingUpdatedEventArgs>((eventArgs) {
-      pricePaid.value = eventArgs.pricePaid ?? pricePaid.value;
-      // TODO: isAfternoon
-      pricePerSeat = eventArgs.priceType?.calculatePrice(isAfternoon: false) ??
-          pricePerSeat;
-    }));
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    controller.dispose();
-    pricePaid.dispose();
-
-    for (final removeListener in removeCallbacks) {
-      try {
-        removeListener.call();
-      } on Exception catch (e) {
-        logger.error(e.toString());
+    useEffect(() {
+      void listener() {
+        globalData.updateActiveBooking(pricePaid: pricePaid.value);
+        controller.text = pricePaid.value.toString();
       }
-    }
-  }
 
-  void decrementPrice() {
-    if (pricePaid.value <= 0) return;
-    setState(() {
+      pricePaid.addListener(listener);
+      return () => pricePaid.removeListener(listener);
+    });
+
+    // TODO(styrix): isAfternoon
+    final pricePerSeat =
+        globalData.activeBooking!.priceType.calculatePrice(isAfternoon: false);
+
+    // rebuild whenever global data changes
+    useListenable(globalData);
+
+    void decrementPrice() {
+      if (pricePaid.value <= 0) return;
+      if (pricePerSeat == 0) {
+        pricePaid.value = 0;
+        return;
+      }
       pricePaid.value = ((pricePaid.value - 1) ~/ pricePerSeat) * pricePerSeat;
-    });
-  }
+    }
 
-  void incrementPrice() {
-    setState(() {
+    void incrementPrice() {
+      if (pricePerSeat == 0) return;
       pricePaid.value = (pricePaid.value ~/ pricePerSeat + 1) * pricePerSeat;
-    });
-  }
+    }
 
-  @override
-  Widget build(BuildContext context) {
     return Column(
       children: [
         const Text("Bezahlt", style: TextStyle(fontSize: 18)),

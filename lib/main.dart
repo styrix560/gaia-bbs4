@@ -33,7 +33,7 @@ class MainApp extends HookWidget {
       ),
       body: const Padding(
         padding: EdgeInsets.all(8),
-        child: SingleChildScrollView(child: BookingsView(isAfternoon: false)),
+        child: SingleChildScrollView(child: BookingsView()),
       ),
     );
   }

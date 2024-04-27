@@ -1,5 +1,3 @@
-import "package:collection/collection.dart";
-
 class Rectangle {
   const Rectangle(this.width, this.height);
 
@@ -7,11 +5,9 @@ class Rectangle {
   final int height;
 }
 
-const List<Rectangle> bookingsDefinition = [
-  Rectangle(28, 20),
-  Rectangle(22, 1),
-  Rectangle(23, 5),
-  Rectangle(18, 1),
+final List<int> rowWidths = [
+  for (var i = 0; i < 20; i++) 28,
+  22,
+  for (var i = 0; i < 5; i++) 23,
+  18,
 ];
-
-int get maxRowLength => bookingsDefinition.map((e) => e.width).max;

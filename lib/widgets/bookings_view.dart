@@ -1,33 +1,35 @@
+import "package:collection/collection.dart";
 import "package:flutter/material.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 
-import "../event_notifier.dart";
 import "../grid_definition.dart";
 import "../types.dart";
 import "../utils.dart";
 import "edit_booking.dart";
 import "seat_cell.dart";
 
-class BookingsView extends StatefulWidget {
-  const BookingsView({super.key, required this.isAfternoon});
+// TODO(styrix): add afternoon as parameter
+class BookingsView extends HookWidget {
+  const BookingsView({super.key});
 
-  final bool isAfternoon;
+  Map<Seat, SeatCellWidget> initSeatCells() {
+    final seatCells = <Seat, SeatCellWidget>{};
 
-  @override
-  State<StatefulWidget> createState() {
-    return BookingViewState();
+    for (final (y, width) in rowWidths.indexed) {
+      for (var x = 0; x < width; x++) {
+        final seat = Seat(y, x);
+        seatCells[seat] = SeatCellWidget(x, y, isAfternoon: false);
+      }
+    }
+
+    return seatCells;
   }
-}
-
-class BookingViewState extends State<BookingsView> {
-  BookingViewState() : seatCells = {};
-
-  // UI-variables
-  Map<Seat, SeatCellWidget> seatCells;
-  late final EditBookingWidget editBookingWidget;
 
   @override
   Widget build(BuildContext context) {
-    var yAll = 0;
+    final seatCells = useRef(initSeatCells());
+
+    final maxRowLength = rowWidths.max;
 
     // TODO(styrix): use "Rang" instead of "R" for ranks 21 or higher
     final globalData = GlobalData();
@@ -37,9 +39,9 @@ class BookingViewState extends State<BookingsView> {
           children: [
             const Spacer(),
             FilledButton(
-              onPressed: !globalData.isBookingActive()
+              onPressed: !globalData.isBookingActive
                   ? null
-                  : globalData.deactivateBooking,
+                  : () => globalData.changeActiveBooking(null),
               child: const Text(
                 "Buchung speichern",
               ),
@@ -47,115 +49,17 @@ class BookingViewState extends State<BookingsView> {
           ],
         ),
         space(height: 16),
-        for (final rect in bookingsDefinition)
-          for (var y = 0; y < rect.height; y++, yAll++)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (rect.width < maxRowLength)
-                  Spacer(flex: maxRowLength - rect.width),
-                for (var x = 0; x < rect.width; x++) seatCells[Seat(yAll, x)]!,
-                if (rect.width < maxRowLength)
-                  Spacer(flex: maxRowLength - rect.width),
-              ],
-            ),
-        editBookingWidget,
+        for (final (y, width) in rowWidths.indexed)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (width < maxRowLength) Spacer(flex: maxRowLength - width),
+              for (var x = 0; x < width; x++) seatCells.value[Seat(y, x)]!,
+              if (width < maxRowLength) Spacer(flex: maxRowLength - width),
+            ],
+          ),
+        EditBookingWidget(),
       ],
     );
-  }
-
-  void initCallbacks() {
-    // TODO(styrix): dispose these callbacks
-    final globalData = GlobalData();
-    globalData.activeBookingListen<ActiveBookingDeactivatedEventArgs>(
-      (eventArgs) {
-        setState(() {
-          eventArgs.oldBooking.updateSeats(seatCells, isActive: false);
-        });
-      },
-    );
-    globalData
-        .activeBookingListen<ActiveBookingActivatedEventArgs>((eventArgs) {
-      setState(() {
-        eventArgs.newBooking.updateSeats(seatCells, isActive: true);
-      });
-    });
-    globalData
-        .activeBookingListen<ActiveBookingDeletedEventArgs>((eventArgs) {
-      setState(() {
-        eventArgs.oldBooking.updateSeats(seatCells, resetBooking: true);
-      });
-    });
-    globalData
-        .activeBookingListen<ActiveBookingSeatAddedEventArgs>((eventArgs) {
-      setState(() {
-        // ignore: avoid-collection-methods-with-unrelated-types
-        eventArgs.newSeat.update(
-          seatCells,
-          globalData.activeBooking,
-          isActive: true,
-        );
-      });
-    });
-    globalData
-        .activeBookingListen<ActiveBookingCreatedEventArgs>((eventArgs) {
-      setState(() {
-        eventArgs.activeBooking.updateSeats(seatCells, isActive: true);
-      });
-    });
-    globalData.activeBookingListen<ActiveBookingSeatRemovedEventArgs>(
-      (eventArgs) => setState(() {
-        eventArgs.oldSeat.update(
-          seatCells,
-          null,
-          isActive: false,
-        );
-      }),
-    );
-    globalData
-        .activeBookingListen<ActiveBookingUpdatedEventArgs>((eventArgs) {
-      setState(() {
-        globalData.activeBooking!.updateSeats(seatCells, isActive: true);
-      });
-    });
-
-    globalData.bookingsListen<BookingsUpdated>((eventArgs) {
-      initSeatCells();
-      for (final booking in eventArgs.newBookings) {
-        booking.updateSeats(seatCells, isActive: false);
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    initCallbacks();
-    initSeatCells();
-
-    final globalData = GlobalData();
-
-    for (final booking in globalData.bookings) {
-      booking.updateSeats(seatCells, isActive: false);
-    }
-
-    editBookingWidget = EditBookingWidget();
-  }
-
-  void initSeatCells() {
-    var yAll = 0;
-    seatCells = {
-      for (final rect in bookingsDefinition)
-        for (var y = 0; y < rect.height; y++, yAll++)
-          for (var x = 0; x < rect.width; x++)
-            Seat(yAll, x): SeatCellWidget(
-              x,
-              yAll,
-              null,
-              isAfternoon: widget.isAfternoon,
-              isActive: false,
-            ),
-    };
   }
 }

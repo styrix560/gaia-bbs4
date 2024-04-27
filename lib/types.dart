@@ -1,9 +1,6 @@
 import "package:flutter/cupertino.dart";
 import "package:supernova/supernova.dart" hide ValueChanged;
 
-import "event_notifier.dart";
-import "widgets/seat_cell.dart";
-
 // TODO(styrix): split this file up into parts
 
 class Booking {
@@ -32,43 +29,6 @@ class Booking {
   List<Seat> getSeatsSorted() => IterableExtension(seats).sortedBy(
         (element) => element.toString(),
       );
-
-  Booking update({
-    String? firstName,
-    String? lastName,
-    String? className,
-    int? pricePaid,
-    PriceType? priceType,
-  }) {
-    return Booking(
-      id,
-      firstName ?? this.firstName,
-      lastName ?? this.lastName,
-      className ?? this.className,
-      seats,
-      pricePaid ?? this.pricePaid,
-      priceType ?? this.priceType,
-    );
-  }
-
-  // TODO(styrix): make this an extension on seatCells
-  void updateSeats(
-    Map<Seat, SeatCellWidget> seatCells, {
-    bool? isActive,
-    bool? resetBooking,
-  }) {
-    assert(
-      isActive != null || (resetBooking ?? false),
-      "If isActive is not supplied, resetBooking has to be true",
-    );
-    for (final seat in seats) {
-      seat.update(
-        seatCells,
-        resetBooking ?? false ? null : this,
-        isActive: isActive ?? false,
-      );
-    }
-  }
 }
 
 enum PriceType {
@@ -105,23 +65,6 @@ class Seat {
     return "R${row + 1} P${seat + 1}";
   }
 
-  // TODO(styrix): make this an extension on seatCells
-
-  // TODO(styrix): maybe make this a higher level function by mirroring the
-  // TODO(styrix): syntax of updateSeats
-  void update(
-    Map<Seat, SeatCellWidget> seatCells,
-    Booking? activeBooking, {
-    required bool isActive,
-  }) {
-    seatCells[this] =
-        // ignore: avoid-collection-methods-with-unrelated-types
-        seatCells[this]!.updateWithValues(
-      activeBooking,
-      isActive: isActive,
-    );
-  }
-
   @override
   bool operator ==(Object other) {
     return other is Seat && row == other.row && seat == other.seat;
@@ -142,7 +85,8 @@ extension SeatExt on Seat {
 }
 
 // TODO(styrix): sort methods
-class GlobalData {
+// TODO(styrix): make this its own file
+class GlobalData extends ChangeNotifier {
   factory GlobalData() {
     return _singleton;
   }
@@ -174,11 +118,6 @@ class GlobalData {
   );
   final Uuid uuid = const Uuid();
 
-  final _eventNotifiers = (
-    activeBooking: EventNotifier<ActiveBookingEventArgs>(),
-    bookings: EventNotifier<BookingsEventArgs>(),
-  );
-
   List<Booking> _bookings;
   Booking? _activeBooking;
 
@@ -186,95 +125,57 @@ class GlobalData {
 
   List<Booking> get bookings => _bookings;
 
-  VoidCallback activeBookingListen<E extends ActiveBookingEventArgs>(
-    ValueChanged<E> listener,
-  ) =>
-      _eventNotifiers.activeBooking.addListener<E>(listener);
-
-  VoidCallback bookingsListen<E extends BookingsEventArgs>(
-    ValueChanged<E> listener,
-  ) =>
-      _eventNotifiers.bookings.addListener<E>(listener);
-
-  List<Booking> findClickedBookings(Seat clickedSeat) => _bookings
-      .where((element) => element.seats.contains(clickedSeat))
-      .toList();
-
-  bool isBookingActive() => _activeBooking != null;
-
-  void deactivateBooking() {
-    _eventNotifiers.activeBooking
-        .notifyListeners(ActiveBookingEventArgs.deactivated(_activeBooking!));
-    _bookings.add(_activeBooking!);
-    _activeBooking = null;
-  }
+  bool get isBookingActive => _activeBooking != null;
 
   void updateActiveBooking({
     String? firstName,
     String? lastName,
     String? className,
+    Set<Seat>? seats,
     int? pricePaid,
     PriceType? priceType,
   }) {
-    final newBooking = _activeBooking!.update(
-      firstName: firstName,
-      lastName: lastName,
-      className: className,
-      pricePaid: pricePaid,
-      priceType: priceType,
+    final newBooking = Booking(
+      _activeBooking!.id,
+      firstName ?? activeBooking!.firstName,
+      lastName ?? activeBooking!.lastName,
+      className ?? activeBooking!.className,
+      seats ?? activeBooking!.seats,
+      pricePaid ?? activeBooking!.pricePaid,
+      priceType ?? activeBooking!.priceType,
     );
-    if (newBooking == _activeBooking) return;
+
+    if (_activeBooking == newBooking) return;
+
     _activeBooking = newBooking;
-    _eventNotifiers.activeBooking
-        .notifyListeners(ActiveBookingEventArgs.updated(
-      firstName: firstName,
-      lastName: lastName,
-      className: className,
-      pricePaid: pricePaid,
-      priceType: priceType,
-    ));
+
+    notifyListeners();
   }
 
-  void activateBooking(Booking newBooking) {
-    _bookings.remove(newBooking);
+  List<Booking> findClickedBookings(Seat seat) {
+    return bookings.where((element) => element.seats.contains(seat)).toList();
+  }
+
+  void changeActiveBooking(Booking? newBooking) {
+    if (isBookingActive) {
+      bookings.add(_activeBooking!);
+    }
+    bookings.remove(newBooking);
     _activeBooking = newBooking;
-    _eventNotifiers.activeBooking
-        .notifyListeners(ActiveBookingEventArgs.activated(newBooking));
+    notifyListeners();
   }
 
-  void changeActiveBooking(Booking newBooking) {
-    if (_activeBooking != null) {
-      deactivateBooking();
-    }
-
-    activateBooking(newBooking);
-  }
-
-  void updateActiveBookingSeats(Seat seat) {
-    if (_activeBooking!.seats.contains(seat)) {
-      if (_activeBooking!.seats.length == 1) {
-        _eventNotifiers.activeBooking.notifyListeners(
-          ActiveBookingEventArgs.deleted(_activeBooking!),
-        );
-        _activeBooking = null;
-        return;
-      }
-      _activeBooking!.seats.remove(seat);
-      _eventNotifiers.activeBooking.notifyListeners(
-        ActiveBookingEventArgs.seatRemoved(seat),
-      );
-    } else {
-      _activeBooking!.seats.add(seat);
-      _eventNotifiers.activeBooking.notifyListeners(
-        ActiveBookingEventArgs.seatAdded(seat),
-      );
-    }
-  }
-
-  void initActiveBooking(Seat seat) {
-    _activeBooking =
-        Booking(uuid.v4(), "", "", "", {seat}, 0, PriceType.normal);
-    _eventNotifiers.activeBooking
-        .notifyListeners(ActiveBookingEventArgs.created(_activeBooking!));
+  void initActiveBooking(Seat firstSeat) {
+    assert(activeBooking == null);
+    _activeBooking = Booking(
+      uuid.v4(),
+      "",
+      "",
+      "",
+      {firstSeat},
+      0,
+      PriceType.normal,
+    );
+    notifyListeners();
   }
 }

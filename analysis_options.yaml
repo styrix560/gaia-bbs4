@@ -5,4 +5,8 @@ linter:
     prefer_double_quotes: true
     prefer_single_quotes: false
     require_trailing_commas: false
-    prefer-trailing-comma: false
+
+dart-code-metrics:
+  rules-exclude:
+    - prefer-trailing-comma
+    - prefer-immediate-return

@@ -1,57 +1,71 @@
 import "package:flutter/material.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 
 import "../types.dart";
+import "../utils.dart";
 
-class SeatCellWidget extends StatelessWidget {
+class SeatCellWidget extends HookWidget {
   const SeatCellWidget(
     this.x,
-    this.y,
-    this.booking, {
+    this.y, {
     required this.isAfternoon,
-    required this.isActive,
     super.key,
   });
 
   final int x;
   final int y;
   final bool isAfternoon;
-  final Booking? booking;
-  final bool isActive;
-
-  SeatCellWidget updateWithValues(
-    Booking? booking, {
-    required bool isActive,
-  }) =>
-      SeatCellWidget(
-        x,
-        y,
-        booking,
-        isActive: isActive,
-        isAfternoon: isAfternoon,
-      );
 
   @override
   Widget build(BuildContext context) {
     final seat = Seat(y, x);
+    final globalData = GlobalData();
+    final activeBooking = globalData.activeBooking;
+    final rebuild = useRebuild();
+    final prevBooking = usePrevious(globalData.activeBooking);
+
+    bool shouldRebuild() {
+      // TODO(styrix): make this more efficient
+      return true;
+    }
+
+    useEffect(() {
+      void callback() {
+        if (shouldRebuild()) {
+          rebuild();
+        }
+      }
+
+      globalData.addListener(callback);
+      return () => globalData.removeListener(callback);
+    });
 
     Color getColor() {
-      // TODO(styrix): also show paid seats for active bookings
-      if (booking == null) return Colors.green;
+      if (!globalData.isBookingActive ||
+          !globalData.activeBooking!.seats.contains(seat)) return Colors.green;
 
       // TODO: isAfternoon
       final pricePerSeat =
-          booking!.priceType.calculatePrice(isAfternoon: false);
+          activeBooking!.priceType.calculatePrice(isAfternoon: false);
       final amountOfPaidSeats =
-          pricePerSeat == 0 ? 1000 : booking!.pricePaid ~/ pricePerSeat;
+          pricePerSeat == 0 ? 1000 : activeBooking.pricePaid ~/ pricePerSeat;
 
-      if (booking!.getSeatsSorted().indexOf(seat) < amountOfPaidSeats) {
-        return isActive ? Colors.blue.shade800 : Colors.red;
+      if (activeBooking.getSeatsSorted().indexOf(seat) < amountOfPaidSeats) {
+        return globalData.isBookingActive ? Colors.blue.shade800 : Colors.red;
       } else {
-        return isActive ? Colors.blue.shade200 : Colors.yellow;
+        return globalData.isBookingActive
+            ? Colors.blue.shade200
+            : Colors.yellow;
       }
     }
 
-    String getText() => booking?.lastName ?? seat.toString();
+    String getText() {
+      if (!globalData.isBookingActive ||
+          !globalData.activeBooking!.seats.contains(seat)) {
+        return seat.toString();
+      }
+      return activeBooking!.lastName;
+    }
 
     return Expanded(
       flex: 2,
@@ -77,6 +91,7 @@ class SeatCellWidget extends StatelessWidget {
   void onClick(Seat seat) {
     final globalData = GlobalData();
     final clickedBookings = globalData.findClickedBookings(seat);
+    // TODO(styrix): handle more than one booking per seat
     assert(clickedBookings.length < 2);
 
     if (clickedBookings.length == 1) {
@@ -85,11 +100,21 @@ class SeatCellWidget extends StatelessWidget {
       return;
     }
 
-    if (!globalData.isBookingActive()) {
+    if (!globalData.isBookingActive) {
       globalData.initActiveBooking(seat);
       return;
     }
 
-    globalData.updateActiveBookingSeats(seat);
+    final newSeats = globalData.activeBooking!.seats;
+    if (newSeats.contains(seat)) {
+      newSeats.remove(seat);
+    } else {
+      newSeats.add(seat);
+    }
+    if (newSeats.isNotEmpty) {
+      globalData.updateActiveBooking(seats: newSeats);
+    } else {
+      globalData.changeActiveBooking(null);
+    }
   }
 }
