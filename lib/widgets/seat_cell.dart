@@ -1,7 +1,10 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
-import "../types.dart";
+import "../types/booking.dart";
+import "../types/global_data.dart";
+import "../types/price_type.dart";
+import "../types/seat.dart";
 import "../utils.dart";
 
 class SeatCellWidget extends HookWidget {

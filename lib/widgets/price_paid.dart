@@ -2,7 +2,8 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:supernova/supernova.dart";
 
-import "../types.dart";
+import "../types/global_data.dart";
+import "../types/price_type.dart";
 
 class PaidPriceWidget extends HookWidget {
   const PaidPriceWidget({super.key});

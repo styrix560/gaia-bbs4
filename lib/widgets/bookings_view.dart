@@ -2,8 +2,9 @@ import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
-import "../grid_definition.dart";
-import "../types.dart";
+import "../types/global_data.dart";
+import "../types/grid_definition.dart";
+import "../types/seat.dart";
 import "../utils.dart";
 import "edit_booking.dart";
 import "seat_cell.dart";
