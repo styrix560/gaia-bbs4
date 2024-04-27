@@ -7,7 +7,6 @@ import "../types.dart";
 class PaidPriceWidget extends HookWidget {
   const PaidPriceWidget({super.key});
 
-
   // TODO(styrix): isAfternoon
   int get pricePerSeat =>
       GlobalData().activeBooking!.priceType.calculatePrice(isAfternoon: false);
@@ -17,20 +16,15 @@ class PaidPriceWidget extends HookWidget {
     final globalData = GlobalData();
     final pricePaid = useState(globalData.activeBooking?.pricePaid ?? 0);
     final controller =
-    useTextEditingController(text: pricePaid.value.toString());
+        useTextEditingController(text: pricePaid.value.toString());
 
     useEffect(() {
-      void listener() {
+      void pricePaidListener() {
         globalData.updateActiveBooking(pricePaid: pricePaid.value);
         controller.text = pricePaid.value.toString();
       }
 
-      pricePaid.addListener(listener);
-      return () => pricePaid.removeListener(listener);
-    });
-
-    useEffect(() {
-      void listener() {
+      void globalDataListener() {
         if (!globalData.isBookingActive) return;
         if (globalData.activeBooking!.pricePaid != pricePaid.value) {
           pricePaid.value = globalData.activeBooking!.pricePaid;
@@ -40,10 +34,20 @@ class PaidPriceWidget extends HookWidget {
         }
       }
 
-      globalData.addListener(listener);
+      void controllerListener() {
+        if (!controller.text.isInt) return;
+        final newValue = controller.text.toInt();
+        if (newValue < 0) return;
+        pricePaid.value = newValue;
+      }
+
+      pricePaid.addListener(pricePaidListener);
+      globalData.addListener(globalDataListener);
+      controller.addListener(controllerListener);
       return () {
-        logger.debug("removed global listener");
-        globalData.removeListener(listener);
+        globalData.removeListener(globalDataListener);
+        pricePaid.removeListener(pricePaidListener);
+        controller.removeListener(controllerListener);
       };
     });
 
