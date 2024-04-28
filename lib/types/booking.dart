@@ -1,9 +1,8 @@
 import "package:supernova/supernova.dart" hide ValueChanged;
 
+import "booking_time.dart";
 import "price_type.dart";
 import "seat.dart";
-
-// TODO(styrix): split this file up into parts
 
 class Booking {
   const Booking(
@@ -24,9 +23,8 @@ class Booking {
   final int pricePaid;
   final PriceType priceType;
 
-  // TODO(styrix): make isAfternoon enum
-  int getPrice({required bool isAfternoon}) =>
-      priceType.calculatePrice(isAfternoon: isAfternoon) * seats.length;
+  int getPrice({required BookingTime bookingTime}) =>
+      priceType.calculatePrice(bookingTime) * seats.length;
 
   List<Seat> getSeatsSorted() => IterableExtension(seats).sorted(
         (a, b) {

@@ -1,3 +1,5 @@
+import "booking_time.dart";
+
 enum PriceType {
   normal("Normal"),
   reduced("Reduziert"),
@@ -9,13 +11,21 @@ enum PriceType {
 }
 
 extension PriceTypeExte on PriceType {
-  int calculatePrice({required bool isAfternoon}) {
+  int calculatePrice(BookingTime bookingTime) {
     if (this == PriceType.free) return 0;
-    if (isAfternoon) {
-      if (this == PriceType.normal) return 15;
-      return 10;
+    switch (bookingTime) {
+      case BookingTime.afternoon:
+        if (this == PriceType.normal) {
+          return 15;
+        } else {
+          return 10;
+        }
+      case BookingTime.evening:
+        if (this == PriceType.normal) {
+          return 20;
+        } else {
+          return 15;
+        }
     }
-    if (this == PriceType.normal) return 20;
-    return 15;
   }
 }

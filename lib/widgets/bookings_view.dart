@@ -2,6 +2,7 @@ import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
+import "../types/booking_time.dart";
 import "../types/global_data.dart";
 import "../types/grid_definition.dart";
 import "../types/seat.dart";
@@ -9,9 +10,10 @@ import "../utils.dart";
 import "edit_booking.dart";
 import "seat_cell.dart";
 
-// TODO(styrix): add afternoon as parameter
 class BookingsView extends HookWidget {
-  const BookingsView({super.key});
+  const BookingsView(this.bookingTime, {super.key});
+
+  final BookingTime bookingTime;
 
   Map<Seat, SeatCellWidget> initSeatCells() {
     final seatCells = <Seat, SeatCellWidget>{};
@@ -19,7 +21,7 @@ class BookingsView extends HookWidget {
     for (final (y, width) in rowWidths.indexed) {
       for (var x = 0; x < width; x++) {
         final seat = Seat(y, x);
-        seatCells[seat] = SeatCellWidget(x, y, isAfternoon: false);
+        seatCells[seat] = SeatCellWidget(x, y, bookingTime);
       }
     }
 
@@ -29,7 +31,7 @@ class BookingsView extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final seatCells = useRef(initSeatCells());
-    final globalData = GlobalData();
+    final globalData = GlobalData(bookingTime);
     useListenableSelector(globalData, () => globalData.isBookingActive);
 
     final maxRowLength = rowWidths.max;
@@ -60,7 +62,7 @@ class BookingsView extends HookWidget {
               if (width < maxRowLength) Spacer(flex: maxRowLength - width),
             ],
           ),
-        EditBookingWidget(),
+        EditBookingWidget(bookingTime),
       ],
     );
   }

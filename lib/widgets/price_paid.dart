@@ -2,19 +2,23 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:supernova/supernova.dart";
 
+import "../types/booking_time.dart";
 import "../types/global_data.dart";
 import "../types/price_type.dart";
 
 class PaidPriceWidget extends HookWidget {
-  const PaidPriceWidget({super.key});
+  const PaidPriceWidget(this.bookingTime, {super.key});
 
-  // TODO(styrix): isAfternoon
-  int get pricePerSeat =>
-      GlobalData().activeBooking!.priceType.calculatePrice(isAfternoon: false);
+  final BookingTime bookingTime;
+
+  int get pricePerSeat => GlobalData(bookingTime)
+      .activeBooking!
+      .priceType
+      .calculatePrice(bookingTime);
 
   @override
   Widget build(BuildContext context) {
-    final globalData = GlobalData();
+    final globalData = GlobalData(bookingTime);
     final pricePaid = useState(globalData.activeBooking?.pricePaid ?? 0);
     final controller =
         useTextEditingController(text: pricePaid.value.toString());

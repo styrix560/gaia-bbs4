@@ -1,19 +1,22 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
+import "../types/booking_time.dart";
 import "../types/global_data.dart";
 import "../types/price_type.dart";
 import "../utils.dart";
 import "price_paid.dart";
 
 class EditBookingWidget extends HookWidget {
-  EditBookingWidget({super.key});
+  const EditBookingWidget(this.bookingTime, {super.key});
+
+  final BookingTime bookingTime;
 
   @override
   Widget build(BuildContext context) {
     final formKey = useMemoized(GlobalKey<FormState>.new);
     final rebuild = useRebuild();
-    final globalData = GlobalData();
+    final globalData = GlobalData(bookingTime);
 
     final numberOfSeat = useState(globalData.activeBooking?.seats.length ?? 0);
     final priceType =
@@ -51,7 +54,7 @@ class EditBookingWidget extends HookWidget {
 
     // TODO(styrix560): modularize this
     Form buildForm() {
-      final globalData = GlobalData();
+      final globalData = GlobalData(bookingTime);
       return Form(
         key: formKey,
         child: Column(
@@ -107,7 +110,7 @@ class EditBookingWidget extends HookWidget {
                   const VerticalDivider(
                     width: 32,
                   ),
-                  const PaidPriceWidget(),
+                  PaidPriceWidget(bookingTime),
                   const VerticalDivider(
                     width: 32,
                   ),
@@ -132,10 +135,9 @@ class EditBookingWidget extends HookWidget {
                             onChanged: onPriceTypeChanged,
                           ),
                           space(width: 16),
-                          // TODO: isAfternoon
                           Text(
                               "${priceType.value.calculatePrice(
-                                isAfternoon: false,
+                                bookingTime,
                               )}€ pro Sitz",
                               style: const TextStyle(fontSize: 18)),
                         ],
@@ -150,7 +152,7 @@ class EditBookingWidget extends HookWidget {
       );
     }
 
-    if (!GlobalData().isBookingActive) {
+    if (!GlobalData(bookingTime).isBookingActive) {
       return const Text("no active booking");
     }
     return Column(

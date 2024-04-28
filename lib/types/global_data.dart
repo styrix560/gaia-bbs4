@@ -2,17 +2,23 @@ import "package:flutter/material.dart";
 import "package:uuid/uuid.dart";
 
 import "booking.dart";
+import "booking_time.dart";
 import "price_type.dart";
 import "seat.dart";
 
 class GlobalData extends ChangeNotifier {
-  factory GlobalData() {
-    return _singleton;
+  factory GlobalData(BookingTime bookingTime) {
+    switch (bookingTime) {
+      case BookingTime.afternoon:
+        return _afternoon;
+      case BookingTime.evening:
+        return _evening;
+    }
   }
 
   GlobalData._internal(this._bookings, this._activeBooking);
 
-  static final GlobalData _singleton = GlobalData._internal(
+  static final GlobalData _afternoon = GlobalData._internal(
     [
       Booking(
         "id",
@@ -35,6 +41,8 @@ class GlobalData extends ChangeNotifier {
     ],
     null,
   );
+  static final GlobalData _evening = GlobalData._internal([], null);
+
   final Uuid uuid = const Uuid();
 
   List<Booking> _bookings;

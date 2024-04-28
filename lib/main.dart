@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:supernova/supernova.dart";
 
+import "types/booking_time.dart";
 import "widgets/bookings_view.dart";
 
 // TODO(styrix): add printing of overview
@@ -33,7 +34,8 @@ class MainApp extends HookWidget {
       ),
       body: const Padding(
         padding: EdgeInsets.all(8),
-        child: SingleChildScrollView(child: BookingsView()),
+        child:
+            SingleChildScrollView(child: BookingsView(BookingTime.afternoon)),
       ),
     );
   }
