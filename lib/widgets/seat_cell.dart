@@ -26,11 +26,23 @@ class SeatCellWidget extends HookWidget {
     final globalData = GlobalData(bookingTime);
     final activeBooking = globalData.activeBooking;
     final rebuild = useRebuild();
-    final prevBooking = usePrevious(globalData.activeBooking);
+    final previousBooking = useRef<Booking?>(null);
 
     bool shouldRebuild() {
-      // TODO(styrix): make this more efficient
-      return true;
+      final activeBooking = globalData.activeBooking;
+      final prevBooking = previousBooking.value?.copy();
+      previousBooking.value = activeBooking?.copy();
+
+      bool isActive(Booking? booking) => booking?.seats.contains(seat) ?? false;
+      final isActiveNow = isActive(activeBooking);
+      final wasActiveBefore = isActive(prevBooking);
+      if (isActiveNow != wasActiveBefore) return true;
+      if (!isActiveNow) return false;
+
+      return activeBooking!.seats.length != prevBooking!.seats.length ||
+          activeBooking.lastName != prevBooking.lastName ||
+          activeBooking.pricePaid != prevBooking.pricePaid ||
+          activeBooking.priceType != prevBooking.priceType;
     }
 
     useEffect(() {

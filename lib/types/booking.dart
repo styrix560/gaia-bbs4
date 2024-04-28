@@ -23,6 +23,16 @@ class Booking {
   final int pricePaid;
   final PriceType priceType;
 
+  Booking copy() => Booking(
+        id,
+        firstName,
+        lastName,
+        className,
+        Set.of(seats),
+        pricePaid,
+        priceType,
+      );
+
   int getPrice({required BookingTime bookingTime}) =>
       priceType.calculatePrice(bookingTime) * seats.length;
 
