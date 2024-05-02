@@ -1,5 +1,6 @@
 import "dart:convert";
 
+import "package:encrypt/encrypt.dart";
 import "package:flutter/services.dart";
 
 class Config {
@@ -21,5 +22,9 @@ class Config {
 
   static String getApiSecret() {
     return _apiSecret;
+  }
+
+  static Key getAesKey() {
+    return Key.fromBase64(_config["aes_key"] as String);
   }
 }
