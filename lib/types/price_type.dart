@@ -5,9 +5,9 @@ enum PriceType {
   reduced("Reduziert"),
   free("Gratis");
 
-  const PriceType(this.name);
+  const PriceType(this.germanName);
 
-  final String name;
+  final String germanName;
 }
 
 extension PriceTypeExte on PriceType {

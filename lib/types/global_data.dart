@@ -1,12 +1,16 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
-import "package:uuid/uuid.dart";
+import "package:supernova/supernova.dart";
 
+import "../api.dart";
+import "../utils.dart";
 import "booking.dart";
 import "booking_time.dart";
 import "price_type.dart";
 import "seat.dart";
 
 class GlobalData extends ChangeNotifier {
+  // TODO(styrix): use seperate ChangeNotifiers for activeBooking and bookings
   factory GlobalData(BookingTime bookingTime) {
     switch (bookingTime) {
       case BookingTime.afternoon:
@@ -16,32 +20,64 @@ class GlobalData extends ChangeNotifier {
     }
   }
 
-  GlobalData._internal(this._bookings, this._activeBooking);
+  GlobalData._internal(
+    this._bookings,
+    this._activeBooking,
+    this.bookingTime,
+  ) {
+    loadBookings();
+  }
 
   static final GlobalData _afternoon = GlobalData._internal(
-    [
-      Booking(
-        "id",
-        "Max",
-        "Mustermann",
-        "7A",
-        {const Seat(0, 9), const Seat(0, 10), const Seat(0, 11)},
-        40,
-        PriceType.normal,
-      ),
-      Booking(
-        "id2",
-        "VERY",
-        "VIP",
-        "important class",
-        {const Seat(0, 0), const Seat(0, 1)},
-        40,
-        PriceType.normal,
-      ),
-    ],
+    [],
     null,
+    BookingTime.afternoon,
   );
-  static final GlobalData _evening = GlobalData._internal([], null);
+  static final GlobalData _evening = GlobalData._internal(
+    [],
+    null,
+    BookingTime.evening,
+  );
+  final BookingTime bookingTime;
+  final isTransactionInProgress = ValueNotifier(false);
+
+  void pushBookings() {
+    // TODO(styrix): add merging of bookings
+    isTransactionInProgress.value = true;
+    // ignore: prefer-async-await
+    Api.writeBookings(bookingTime.germanName, _bookings)
+        .then((_) => snackbar("Buchungen erfolgreich geschrieben"))
+        .onError(
+      (error, stackTrace) {
+        logger.error("error pushing changes to db", error, stackTrace);
+        snackbar("Fehler beim Schreiben der Buchungen");
+      },
+    ).then((_) {
+      isTransactionInProgress.value = false;
+    });
+  }
+
+  void loadBookings() {
+    isTransactionInProgress.value = true;
+    notifyListeners();
+    // ignore: prefer-async-await
+    Api.getBookings(bookingTime.germanName)
+        .then((value) {
+          _bookings = value;
+          notifyListeners();
+        })
+        .then((_) => snackbar("Buchungen erfolreich geladen"))
+        .onError((error, stackTrace) {
+          logger.error("error loading bookings", error, stackTrace);
+          snackbar(
+            "Fehler beim Laden der Buchungen. Ist Internet aktiviert und "
+            "geht die Uhr richtig?",
+          );
+        })
+        .then((value) {
+          isTransactionInProgress.value = false;
+        });
+  }
 
   final Uuid uuid = const Uuid();
 
@@ -49,8 +85,6 @@ class GlobalData extends ChangeNotifier {
   Booking? _activeBooking;
 
   Booking? get activeBooking => _activeBooking;
-
-  List<Booking> get bookings => _bookings;
 
   bool get isBookingActive => _activeBooking != null;
 
@@ -61,6 +95,7 @@ class GlobalData extends ChangeNotifier {
     Set<Seat>? seats,
     int? pricePaid,
     PriceType? priceType,
+    String? comments,
   }) {
     final newBooking = Booking(
       _activeBooking!.id,
@@ -70,9 +105,12 @@ class GlobalData extends ChangeNotifier {
       seats ?? activeBooking!.seats,
       pricePaid ?? activeBooking!.pricePaid,
       priceType ?? activeBooking!.priceType,
+      comments ?? activeBooking!.comments,
     );
 
     if (_activeBooking == newBooking) return;
+
+    logger.debug("updated active booking");
 
     _activeBooking = newBooking;
 
@@ -80,29 +118,25 @@ class GlobalData extends ChangeNotifier {
   }
 
   List<Booking> getBookingsContainingSeat(Seat seat) {
-    return bookings.where((element) => element.seats.contains(seat)).toList();
+    return _bookings.where((element) => element.seats.contains(seat)).toList();
   }
 
   void changeActiveBooking(Booking? newBooking) {
+    logger.debug("changed active booking from id "
+        "${_activeBooking?.id} to ${newBooking?.id}");
     if (isBookingActive) {
-      bookings.add(_activeBooking!);
+      _bookings.add(_activeBooking!);
     }
-    bookings.remove(newBooking);
+    _bookings.remove(newBooking);
     _activeBooking = newBooking;
     notifyListeners();
   }
 
-  void initActiveBooking(Seat firstSeat) {
+  void initializeActiveBooking(Seat firstSeat) {
     assert(activeBooking == null);
-    _activeBooking = Booking(
-      uuid.v4(),
-      "",
-      "",
-      "",
-      {firstSeat},
-      0,
-      PriceType.normal,
-    );
+    logger.debug("initialize active booking");
+    _activeBooking =
+        Booking(uuid.v4(), "", "", "", {firstSeat}, 0, PriceType.normal, "");
     notifyListeners();
   }
 }

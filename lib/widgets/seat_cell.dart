@@ -27,6 +27,7 @@ class SeatCellWidget extends HookWidget {
     final activeBooking = globalData.activeBooking;
     final rebuild = useRebuild();
     final previousBooking = useRef<Booking?>(null);
+    useListenable(GlobalData(bookingTime));
 
     bool shouldRebuild() {
       final activeBooking = globalData.activeBooking;
@@ -44,17 +45,6 @@ class SeatCellWidget extends HookWidget {
           activeBooking.pricePaid != prevBooking.pricePaid ||
           activeBooking.priceType != prevBooking.priceType;
     }
-
-    useEffect(() {
-      void callback() {
-        if (shouldRebuild()) {
-          rebuild();
-        }
-      }
-
-      globalData.addListener(callback);
-      return () => globalData.removeListener(callback);
-    });
 
     Color getColor() {
       Color getColorForBooking(
@@ -132,7 +122,7 @@ class SeatCellWidget extends HookWidget {
     }
 
     if (!globalData.isBookingActive) {
-      globalData.initActiveBooking(seat);
+      globalData.initializeActiveBooking(seat);
       return;
     }
 

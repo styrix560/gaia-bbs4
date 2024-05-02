@@ -129,7 +129,7 @@ class EditBookingWidget extends HookWidget {
                                   in PriceType.values)
                                 DropdownMenuItem(
                                   value: priceType,
-                                  child: Text(priceType.name),
+                                  child: Text(priceType.germanName),
                                 ),
                             ],
                             onChanged: onPriceTypeChanged,

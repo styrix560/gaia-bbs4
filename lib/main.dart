@@ -1,3 +1,4 @@
+import "package:bbs4/types/config.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
@@ -5,6 +6,8 @@ import "package:supernova/supernova.dart";
 
 import "types/booking_time.dart";
 import "widgets/bookings_view.dart";
+
+final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
 // TODO(styrix): add printing of overview
 Future<void> main() async {
@@ -15,8 +18,11 @@ Future<void> main() async {
     minLogLevel: kDebugMode ? LogLevel.trace : LogLevel.config,
   );
 
-  runApp(const MaterialApp(
-    home: MainApp(),
+  await Config.loadConfig("assets/config.json");
+
+  runApp(MaterialApp(
+    scaffoldMessengerKey: scaffoldKey,
+    home: const MainApp(),
   ));
 }
 

@@ -13,6 +13,7 @@ class Booking {
     this.seats,
     this.pricePaid,
     this.priceType,
+    this.comments,
   );
 
   final String id;
@@ -22,6 +23,7 @@ class Booking {
   final Set<Seat> seats;
   final int pricePaid;
   final PriceType priceType;
+  final String comments;
 
   Booking copy() => Booking(
         id,
@@ -31,6 +33,7 @@ class Booking {
         Set.of(seats),
         pricePaid,
         priceType,
+        comments,
       );
 
   int getPrice({required BookingTime bookingTime}) =>
@@ -44,4 +47,10 @@ class Booking {
           return a.row.compareTo(b.row);
         },
       );
+
+  @override
+  String toString() {
+    return "Booking($id, $lastName, $firstName, (${seats.join(" / ")}) "
+        "$pricePaid, $priceType, $comments)";
+  }
 }

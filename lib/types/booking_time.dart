@@ -2,7 +2,7 @@ enum BookingTime {
   afternoon("Nachmittag"),
   evening("Abend");
 
-  const BookingTime(this.name);
+  const BookingTime(this.germanName);
 
-  final String name;
+  final String germanName;
 }

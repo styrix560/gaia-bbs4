@@ -1,6 +1,7 @@
 import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
+import "package:supernova/supernova.dart";
 
 import "../types/booking_time.dart";
 import "../types/global_data.dart";
@@ -33,8 +34,12 @@ class BookingsView extends HookWidget {
     final seatCells = useRef(initSeatCells());
     final globalData = GlobalData(bookingTime);
     useListenableSelector(globalData, () => globalData.isBookingActive);
+    useListenable(globalData.isTransactionInProgress);
 
     final maxRowLength = rowWidths.max;
+
+    final transactionsDisabled =
+        globalData.isBookingActive || globalData.isTransactionInProgress.value;
 
     // TODO(styrix): use "Rang" instead of "R" for ranks 21 or higher
     return Column(
@@ -42,6 +47,16 @@ class BookingsView extends HookWidget {
         Row(
           children: [
             const Spacer(),
+            FilledButton(
+              onPressed: transactionsDisabled ? null : globalData.loadBookings,
+              child: const Text("Buchungen zurücksetzen"),
+            ),
+            space(width: 16),
+            FilledButton(
+              onPressed: transactionsDisabled ? null : globalData.pushBookings,
+              child: const Text("Datenbank aktualisieren"),
+            ),
+            space(width: 16),
             FilledButton(
               onPressed: !globalData.isBookingActive
                   ? null
