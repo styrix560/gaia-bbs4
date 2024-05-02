@@ -122,6 +122,10 @@ class GlobalData extends ChangeNotifier {
   }
 
   void changeActiveBooking(Booking? newBooking) {
+    if (isTransactionInProgress.value) {
+      snackbar("Bitte warten bis die Transaktion abgeschlossen ist.");
+      return;
+    }
     logger.debug("changed active booking from id "
         "${_activeBooking?.id} to ${newBooking?.id}");
     if (isBookingActive) {
@@ -133,6 +137,10 @@ class GlobalData extends ChangeNotifier {
   }
 
   void initializeActiveBooking(Seat firstSeat) {
+    if (isTransactionInProgress.value) {
+      snackbar("Bitte warten bis die Transaktion abgeschlossen ist.");
+      return;
+    }
     assert(activeBooking == null);
     logger.debug("initialize active booking");
     _activeBooking =
