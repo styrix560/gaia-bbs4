@@ -38,8 +38,19 @@ class GlobalData extends ChangeNotifier {
     null,
     BookingTime.evening,
   );
+
   final BookingTime bookingTime;
+  List<Booking> _bookings;
+  Booking? _activeBooking;
+
   final isTransactionInProgress = ValueNotifier(false);
+  final Uuid uuid = const Uuid();
+
+  Booking? get activeBooking => _activeBooking;
+
+  List<Booking> get bookings => _bookings;
+
+  bool get isBookingActive => _activeBooking != null;
 
   void pushBookings() {
     // TODO(styrix): add merging of bookings
@@ -78,15 +89,6 @@ class GlobalData extends ChangeNotifier {
           isTransactionInProgress.value = false;
         });
   }
-
-  final Uuid uuid = const Uuid();
-
-  List<Booking> _bookings;
-  Booking? _activeBooking;
-
-  Booking? get activeBooking => _activeBooking;
-
-  bool get isBookingActive => _activeBooking != null;
 
   void updateActiveBooking({
     String? firstName,

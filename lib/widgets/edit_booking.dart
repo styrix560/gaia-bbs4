@@ -153,7 +153,7 @@ class EditBookingWidget extends HookWidget {
     }
 
     if (!GlobalData(bookingTime).isBookingActive) {
-      return const Text("no active booking");
+      return const SizedBox();
     }
     return Column(
       children: [
