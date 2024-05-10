@@ -50,7 +50,7 @@ class OverviewWidget extends HookWidget {
       ),
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       children: [
-        for (final booking in globalData.bookings)
+        for (final booking in globalData.bookings.value)
           TableRow(
             children: [
               Text(booking.lastName),

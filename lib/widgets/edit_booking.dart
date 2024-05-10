@@ -18,10 +18,10 @@ class EditBookingWidget extends HookWidget {
     final formKey = useMemoized(GlobalKey<FormState>.new);
     final rebuild = useRebuild();
     final globalData = GlobalData(bookingTime);
+    final activeBooking = globalData.activeBooking.value;
 
-    final numberOfSeat = useState(globalData.activeBooking?.seats.length ?? 0);
-    final priceType =
-        useState(globalData.activeBooking?.priceType ?? PriceType.normal);
+    final numberOfSeat = useState(activeBooking?.seats.length ?? 0);
+    final priceType = useState(activeBooking?.priceType ?? PriceType.normal);
 
     final lastName = useTextEditingController();
     final firstName = useTextEditingController();
@@ -36,11 +36,12 @@ class EditBookingWidget extends HookWidget {
     }
 
     void updateState() {
-      firstName.text = globalData.activeBooking?.firstName ?? firstName.text;
-      lastName.text = globalData.activeBooking?.lastName ?? lastName.text;
-      className.text = globalData.activeBooking?.className ?? className.text;
-      numberOfSeat.value = globalData.activeBooking?.seats.length ?? 0;
-      priceType.value = globalData.activeBooking?.priceType ?? PriceType.normal;
+      final activeBooking = globalData.activeBooking.value;
+      firstName.text = activeBooking?.firstName ?? firstName.text;
+      lastName.text = activeBooking?.lastName ?? lastName.text;
+      className.text = activeBooking?.className ?? className.text;
+      numberOfSeat.value = activeBooking?.seats.length ?? 0;
+      priceType.value = activeBooking?.priceType ?? PriceType.normal;
     }
 
     useEffect(() {
@@ -49,8 +50,8 @@ class EditBookingWidget extends HookWidget {
         rebuild();
       }
 
-      globalData.addListener(listenable);
-      return () => globalData.removeListener(listenable);
+      globalData.activeBooking.addListener(listenable);
+      return () => globalData.activeBooking.removeListener(listenable);
     });
 
     // TODO(styrix560): modularize this
@@ -106,8 +107,12 @@ class EditBookingWidget extends HookWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("Sitze bestellt: ${numberOfSeat.value}",
-                      style: const TextStyle(fontSize: 18)),
+                  Text(
+                    "Sitze bestellt: ${numberOfSeat.value}",
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
                   const VerticalDivider(
                     width: 32,
                   ),
@@ -129,10 +134,13 @@ class EditBookingWidget extends HookWidget {
                           ),
                           space(width: 16),
                           Text(
-                              "${priceType.value.calculatePrice(
-                                bookingTime,
-                              )}€ pro Sitz",
-                              style: const TextStyle(fontSize: 18)),
+                            "${priceType.value.calculatePrice(
+                              bookingTime,
+                            )}€ pro Sitz",
+                            style: const TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
                         ],
                       ),
                     ],

@@ -1,3 +1,4 @@
+import "package:flutter/cupertino.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:supernova/supernova.dart";
@@ -9,13 +10,13 @@ import "booking_time.dart";
 import "price_type.dart";
 import "seat.dart";
 
-class GlobalData extends ChangeNotifier {
+class GlobalData {
   // TODO(styrix): use seperate ChangeNotifiers for activeBooking and bookings
   factory GlobalData(BookingTime bookingTime) {
     if (!datas.containsKey(bookingTime)) {
       datas[bookingTime] = GlobalData._internal(
-        [],
-        null,
+        ValueNotifier([]),
+        ValueNotifier(null),
         bookingTime,
       );
     }
@@ -33,23 +34,23 @@ class GlobalData extends ChangeNotifier {
   static final Map<BookingTime, GlobalData> datas = {};
 
   final BookingTime bookingTime;
-  List<Booking> _bookings;
-  Booking? _activeBooking;
+  ValueNotifier<List<Booking>> _bookings;
+  ValueNotifier<Booking?> _activeBooking;
 
   final isTransactionInProgress = ValueNotifier(false);
   final Uuid uuid = const Uuid();
 
-  Booking? get activeBooking => _activeBooking;
+  ValueNotifier<Booking?> get activeBooking => _activeBooking;
 
-  List<Booking> get bookings => _bookings;
+  ValueNotifier<List<Booking>> get bookings => _bookings;
 
-  bool get isBookingActive => _activeBooking != null;
+  bool get isBookingActive => _activeBooking.value != null;
 
   void pushBookings() {
     // TODO(styrix): add merging of bookings
     isTransactionInProgress.value = true;
     // ignore: prefer-async-await
-    Api.writeBookings(bookingTime.germanName, _bookings)
+    Api.writeBookings(bookingTime.germanName, _bookings.value)
         .then((_) => snackbar("Buchungen erfolgreich geschrieben"))
         .onError(
       (error, stackTrace) {
@@ -63,12 +64,10 @@ class GlobalData extends ChangeNotifier {
 
   void loadBookings() {
     isTransactionInProgress.value = true;
-    notifyListeners();
     // ignore: prefer-async-await
     Api.getBookings(bookingTime.germanName)
         .then((value) {
-          _bookings = value;
-          notifyListeners();
+          _bookings.value = value;
         })
         .then((_) => snackbar("Buchungen erfolreich geladen"))
         .onError((error, stackTrace) {
@@ -93,27 +92,27 @@ class GlobalData extends ChangeNotifier {
     String? comments,
   }) {
     final newBooking = Booking(
-      _activeBooking!.id,
-      firstName ?? activeBooking!.firstName,
-      lastName ?? activeBooking!.lastName,
-      className ?? activeBooking!.className,
-      seats ?? activeBooking!.seats,
-      pricePaid ?? activeBooking!.pricePaid,
-      priceType ?? activeBooking!.priceType,
-      comments ?? activeBooking!.comments,
+      _activeBooking.value!.id,
+      firstName ?? activeBooking.value!.firstName,
+      lastName ?? activeBooking.value!.lastName,
+      className ?? activeBooking.value!.className,
+      seats ?? activeBooking.value!.seats,
+      pricePaid ?? activeBooking.value!.pricePaid,
+      priceType ?? activeBooking.value!.priceType,
+      comments ?? activeBooking.value!.comments,
     );
 
-    if (_activeBooking == newBooking) return;
+    if (_activeBooking.value == newBooking) return;
 
     logger.debug("updated active booking");
 
-    _activeBooking = newBooking;
-
-    notifyListeners();
+    _activeBooking.value = newBooking;
   }
 
   List<Booking> getBookingsContainingSeat(Seat seat) {
-    return _bookings.where((element) => element.seats.contains(seat)).toList();
+    return _bookings.value
+        .where((element) => element.seats.contains(seat))
+        .toList();
   }
 
   void changeActiveBooking(Booking? newBooking) {
@@ -122,13 +121,13 @@ class GlobalData extends ChangeNotifier {
       return;
     }
     logger.debug("changed active booking from id "
-        "${_activeBooking?.id} to ${newBooking?.id}");
+        "${_activeBooking.value?.id} to ${newBooking?.id}");
     if (isBookingActive) {
-      _bookings.add(_activeBooking!);
+      _bookings.value.add(_activeBooking.value!);
     }
-    _bookings.remove(newBooking);
-    _activeBooking = newBooking;
-    notifyListeners();
+    _bookings.value.remove(newBooking);
+    _activeBooking.value = newBooking;
+    _bookings.notifyListeners();
   }
 
   void initializeActiveBooking(Seat firstSeat) {
@@ -136,10 +135,9 @@ class GlobalData extends ChangeNotifier {
       snackbar("Bitte warten bis die Transaktion abgeschlossen ist.");
       return;
     }
-    assert(activeBooking == null);
+    assert(activeBooking.value == null);
     logger.debug("initialize active booking");
-    _activeBooking =
+    _activeBooking.value =
         Booking(uuid.v4(), "", "", "", {firstSeat}, 0, PriceType.normal, "");
-    notifyListeners();
   }
 }

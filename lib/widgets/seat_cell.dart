@@ -24,13 +24,13 @@ class SeatCellWidget extends HookWidget {
   Widget build(BuildContext context) {
     final seat = Seat(y, x);
     final globalData = GlobalData(bookingTime);
-    final activeBooking = globalData.activeBooking;
+    final activeBooking = globalData.activeBooking.value;
     final rebuild = useRebuild();
     final previousBooking = useRef<Booking?>(null);
-    useListenable(GlobalData(bookingTime));
+    useListenable(globalData.activeBooking);
+    useListenable(globalData.bookings);
 
     bool shouldRebuild() {
-      final activeBooking = globalData.activeBooking;
       final prevBooking = previousBooking.value?.copy();
       previousBooking.value = activeBooking?.copy();
 
@@ -58,7 +58,7 @@ class SeatCellWidget extends HookWidget {
             : colorIfNotPaid;
       }
 
-      if (globalData.activeBooking?.seats.contains(seat) ?? false) {
+      if (activeBooking?.seats.contains(seat) ?? false) {
         return getColorForBooking(
           activeBooking!,
           Colors.blue.shade800,
@@ -79,7 +79,7 @@ class SeatCellWidget extends HookWidget {
     }
 
     String getText() {
-      if (globalData.activeBooking?.seats.contains(seat) ?? false) {
+      if (activeBooking?.seats.contains(seat) ?? false) {
         return activeBooking!.lastName;
       }
       final bookings = globalData.getBookingsContainingSeat(seat);
@@ -111,6 +111,7 @@ class SeatCellWidget extends HookWidget {
 
   void onClick(Seat seat) {
     final globalData = GlobalData(bookingTime);
+    final activeBooking = globalData.activeBooking.value;
     final clickedBookings = globalData.getBookingsContainingSeat(seat);
     // TODO(styrix): handle more than one booking per seat
     assert(clickedBookings.length < 2);
@@ -126,7 +127,7 @@ class SeatCellWidget extends HookWidget {
       return;
     }
 
-    final newSeats = globalData.activeBooking!.seats;
+    final newSeats = activeBooking!.seats;
     if (newSeats.contains(seat)) {
       newSeats.remove(seat);
     } else {

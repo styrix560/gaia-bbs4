@@ -35,7 +35,10 @@ class BookingsView extends HookWidget {
       bookingTime.value,
     ]);
     final globalData = GlobalData(bookingTime.value);
-    useListenableSelector(globalData, () => globalData.isBookingActive);
+    useListenableSelector(
+      globalData.activeBooking,
+      () => globalData.isBookingActive,
+    );
     useListenable(globalData.isTransactionInProgress);
 
     final maxRowLength = rowWidths.max;
