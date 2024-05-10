@@ -11,15 +11,17 @@ class PaidPriceWidget extends HookWidget {
 
   final BookingTime bookingTime;
 
-  int get pricePerSeat => GlobalData(bookingTime)
-      .activeBooking!
+  int get pricePerSeat => GlobalData.fromTime(bookingTime)
+      .activeBooking
+      .value!
       .priceType
       .calculatePrice(bookingTime);
 
   @override
   Widget build(BuildContext context) {
-    final globalData = GlobalData(bookingTime);
-    final pricePaid = useState(globalData.activeBooking?.pricePaid ?? 0);
+    final globalData = GlobalData.fromTime(bookingTime);
+    final activeBooking = globalData.activeBooking.value;
+    final pricePaid = useState(activeBooking?.pricePaid ?? 0);
     final controller =
         useTextEditingController(text: pricePaid.value.toString());
 
@@ -31,8 +33,8 @@ class PaidPriceWidget extends HookWidget {
 
       void globalDataListener() {
         if (!globalData.isBookingActive) return;
-        if (globalData.activeBooking!.pricePaid != pricePaid.value) {
-          pricePaid.value = globalData.activeBooking!.pricePaid;
+        if (activeBooking!.pricePaid != pricePaid.value) {
+          pricePaid.value = activeBooking.pricePaid;
         }
         if (controller.text != pricePaid.value.toString()) {
           controller.text = pricePaid.value.toString();
@@ -47,10 +49,10 @@ class PaidPriceWidget extends HookWidget {
       }
 
       pricePaid.addListener(pricePaidListener);
-      globalData.addListener(globalDataListener);
+      globalData.activeBooking.addListener(globalDataListener);
       controller.addListener(controllerListener);
       return () {
-        globalData.removeListener(globalDataListener);
+        globalData.activeBooking.removeListener(globalDataListener);
         pricePaid.removeListener(pricePaidListener);
         controller.removeListener(controllerListener);
       };

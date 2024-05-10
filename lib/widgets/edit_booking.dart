@@ -1,26 +1,25 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
-import "../types/booking_time.dart";
 import "../types/global_data.dart";
 import "../types/price_type.dart";
 import "../utils.dart";
+import "custom_menu_button.dart";
 import "price_paid.dart";
 
 class EditBookingWidget extends HookWidget {
-  const EditBookingWidget(this.bookingTime, {super.key});
-
-  final BookingTime bookingTime;
+  const EditBookingWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     final formKey = useMemoized(GlobalKey<FormState>.new);
     final rebuild = useRebuild();
-    final globalData = GlobalData(bookingTime);
+    final globalData = GlobalData();
+    final activeBooking = globalData.activeBooking.value;
+    final bookingTime = GlobalData.currentBookingTime;
 
-    final numberOfSeat = useState(globalData.activeBooking?.seats.length ?? 0);
-    final priceType =
-        useState(globalData.activeBooking?.priceType ?? PriceType.normal);
+    final numberOfSeat = useState(activeBooking?.seats.length ?? 0);
+    final priceType = useState(activeBooking?.priceType ?? PriceType.normal);
 
     final lastName = useTextEditingController();
     final firstName = useTextEditingController();
@@ -35,11 +34,12 @@ class EditBookingWidget extends HookWidget {
     }
 
     void updateState() {
-      firstName.text = globalData.activeBooking?.firstName ?? firstName.text;
-      lastName.text = globalData.activeBooking?.lastName ?? lastName.text;
-      className.text = globalData.activeBooking?.className ?? className.text;
-      numberOfSeat.value = globalData.activeBooking?.seats.length ?? 0;
-      priceType.value = globalData.activeBooking?.priceType ?? PriceType.normal;
+      final activeBooking = globalData.activeBooking.value;
+      firstName.text = activeBooking?.firstName ?? firstName.text;
+      lastName.text = activeBooking?.lastName ?? lastName.text;
+      className.text = activeBooking?.className ?? className.text;
+      numberOfSeat.value = activeBooking?.seats.length ?? 0;
+      priceType.value = activeBooking?.priceType ?? PriceType.normal;
     }
 
     useEffect(() {
@@ -48,13 +48,13 @@ class EditBookingWidget extends HookWidget {
         rebuild();
       }
 
-      globalData.addListener(listenable);
-      return () => globalData.removeListener(listenable);
+      globalData.activeBooking.addListener(listenable);
+      return () => globalData.activeBooking.removeListener(listenable);
     });
 
     // TODO(styrix560): modularize this
     Form buildForm() {
-      final globalData = GlobalData(bookingTime);
+      final globalData = GlobalData();
       return Form(
         key: formKey,
         child: Column(
@@ -105,12 +105,16 @@ class EditBookingWidget extends HookWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("Sitze bestellt: ${numberOfSeat.value}",
-                      style: const TextStyle(fontSize: 18)),
+                  Text(
+                    "Sitze bestellt: ${numberOfSeat.value}",
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
                   const VerticalDivider(
                     width: 32,
                   ),
-                  PaidPriceWidget(bookingTime),
+                  PaidPriceWidget(bookingTime.value),
                   const VerticalDivider(
                     width: 32,
                   ),
@@ -120,26 +124,21 @@ class EditBookingWidget extends HookWidget {
                       space(),
                       Row(
                         children: [
-                          DropdownButton(
-                            value: priceType.value,
-                            focusColor: Colors.transparent,
-                            padding: const EdgeInsets.only(left: 8, right: 8),
-                            items: <DropdownMenuItem<PriceType>>[
-                              for (final PriceType priceType
-                                  in PriceType.values)
-                                DropdownMenuItem(
-                                  value: priceType,
-                                  child: Text(priceType.germanName),
-                                ),
-                            ],
-                            onChanged: onPriceTypeChanged,
+                          CustomMenuButton(
+                            priceType.value,
+                            PriceType.values,
+                            (priceType) => priceType.germanName,
+                            onPriceTypeChanged,
                           ),
                           space(width: 16),
                           Text(
-                              "${priceType.value.calculatePrice(
-                                bookingTime,
-                              )}€ pro Sitz",
-                              style: const TextStyle(fontSize: 18)),
+                            "${priceType.value.calculatePrice(
+                              bookingTime.value,
+                            )}€ pro Sitz",
+                            style: const TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -152,7 +151,7 @@ class EditBookingWidget extends HookWidget {
       );
     }
 
-    if (!GlobalData(bookingTime).isBookingActive) {
+    if (!GlobalData().isBookingActive) {
       return const SizedBox();
     }
     return Column(

@@ -4,7 +4,6 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:supernova/supernova.dart";
 
-import "types/booking_time.dart";
 import "widgets/bookings_view.dart";
 import "widgets/overview.dart";
 
@@ -34,7 +33,7 @@ class MainApp extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tabController = useTabController(initialLength: 3);
+    final tabController = useTabController(initialLength: 2);
 
     return Scaffold(
       appBar: AppBar(
@@ -43,16 +42,14 @@ class MainApp extends HookWidget {
           style: TextStyle(fontSize: 15),
         ),
         bottom: TabBar(controller: tabController, tabs: const [
-          Tab(text: "Nachmittag"),
-          Tab(text: "Abend"),
+          Tab(text: "Buchungen"),
           Tab(text: "Überblick"),
         ]),
       ),
       body: Padding(
         padding: EdgeInsets.all(8),
         child: TabBarView(controller: tabController, children: [
-          SingleChildScrollView(child: BookingsView(BookingTime.afternoon)),
-          SingleChildScrollView(child: BookingsView(BookingTime.evening)),
+          const SingleChildScrollView(child: BookingsView()),
           OverviewWidget(tabController),
         ]),
       ),
