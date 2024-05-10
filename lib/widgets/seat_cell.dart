@@ -23,7 +23,7 @@ class SeatCellWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final seat = Seat(y, x);
-    final globalData = GlobalData(bookingTime);
+    final globalData = GlobalData.fromTime(bookingTime);
     final activeBooking = globalData.activeBooking.value;
     final rebuild = useRebuild();
     final previousBooking = useRef<Booking?>(null);
@@ -110,7 +110,7 @@ class SeatCellWidget extends HookWidget {
   }
 
   void onClick(Seat seat) {
-    final globalData = GlobalData(bookingTime);
+    final globalData = GlobalData.fromTime(bookingTime);
     final activeBooking = globalData.activeBooking.value;
     final clickedBookings = globalData.getBookingsContainingSeat(seat);
     // TODO(styrix): handle more than one booking per seat

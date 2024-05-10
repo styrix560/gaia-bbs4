@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
-import "../types/booking_time.dart";
 import "../types/global_data.dart";
 import "../types/price_type.dart";
 import "../utils.dart";
@@ -9,16 +8,15 @@ import "custom_menu_button.dart";
 import "price_paid.dart";
 
 class EditBookingWidget extends HookWidget {
-  const EditBookingWidget(this.bookingTime, {super.key});
-
-  final BookingTime bookingTime;
+  const EditBookingWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     final formKey = useMemoized(GlobalKey<FormState>.new);
     final rebuild = useRebuild();
-    final globalData = GlobalData(bookingTime);
+    final globalData = GlobalData();
     final activeBooking = globalData.activeBooking.value;
+    final bookingTime = GlobalData.currentBookingTime;
 
     final numberOfSeat = useState(activeBooking?.seats.length ?? 0);
     final priceType = useState(activeBooking?.priceType ?? PriceType.normal);
@@ -56,7 +54,7 @@ class EditBookingWidget extends HookWidget {
 
     // TODO(styrix560): modularize this
     Form buildForm() {
-      final globalData = GlobalData(bookingTime);
+      final globalData = GlobalData();
       return Form(
         key: formKey,
         child: Column(
@@ -116,7 +114,7 @@ class EditBookingWidget extends HookWidget {
                   const VerticalDivider(
                     width: 32,
                   ),
-                  PaidPriceWidget(bookingTime),
+                  PaidPriceWidget(bookingTime.value),
                   const VerticalDivider(
                     width: 32,
                   ),
@@ -135,7 +133,7 @@ class EditBookingWidget extends HookWidget {
                           space(width: 16),
                           Text(
                             "${priceType.value.calculatePrice(
-                              bookingTime,
+                              bookingTime.value,
                             )}€ pro Sitz",
                             style: const TextStyle(
                               fontSize: 18,
@@ -153,7 +151,7 @@ class EditBookingWidget extends HookWidget {
       );
     }
 
-    if (!GlobalData(bookingTime).isBookingActive) {
+    if (!GlobalData().isBookingActive) {
       return const SizedBox();
     }
     return Column(

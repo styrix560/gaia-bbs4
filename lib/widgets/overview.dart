@@ -38,7 +38,7 @@ class OverviewWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final globalData = GlobalData(bookingTime);
+    final globalData = GlobalData();
     useListenable(globalData.isTransactionInProgress);
     return Table(
       border: const TableBorder(

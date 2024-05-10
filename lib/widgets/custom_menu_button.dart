@@ -6,6 +6,7 @@ class CustomMenuButton<T extends Enum> extends StatelessWidget {
     this.menuItems,
     this.getName,
     this.onChanged, {
+    this.disabled,
     super.key,
   });
 
@@ -13,6 +14,7 @@ class CustomMenuButton<T extends Enum> extends StatelessWidget {
   final List<T> menuItems;
   final String Function(T) getName;
   final void Function(T?) onChanged;
+  final bool? disabled;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class CustomMenuButton<T extends Enum> extends StatelessWidget {
             child: Text(getName(priceType)),
           ),
       ],
-      onChanged: onChanged,
+      onChanged: disabled ?? false ? null : onChanged,
     );
   }
 }

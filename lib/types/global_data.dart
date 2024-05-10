@@ -11,16 +11,19 @@ import "price_type.dart";
 import "seat.dart";
 
 class GlobalData {
-  // TODO(styrix): use seperate ChangeNotifiers for activeBooking and bookings
-  factory GlobalData(BookingTime bookingTime) {
-    if (!datas.containsKey(bookingTime)) {
-      datas[bookingTime] = GlobalData._internal(
+  factory GlobalData() {
+    return GlobalData.fromTime(currentBookingTime.value);
+  }
+
+  factory GlobalData.fromTime(BookingTime bookingTime) {
+    if (!globalDataInstances.containsKey(bookingTime)) {
+      globalDataInstances[bookingTime] = GlobalData._internal(
         ValueNotifier([]),
         ValueNotifier(null),
         bookingTime,
       );
     }
-    return datas[bookingTime]!;
+    return globalDataInstances[bookingTime]!;
   }
 
   GlobalData._internal(
@@ -31,7 +34,13 @@ class GlobalData {
     loadBookings();
   }
 
-  static final Map<BookingTime, GlobalData> datas = {};
+  static final Map<BookingTime, GlobalData> globalDataInstances = {};
+
+  static final ValueNotifier<BookingTime> currentBookingTime =
+      ValueNotifier(BookingTime.afternoon);
+
+  set bookingTime(BookingTime newBookingTime) =>
+      currentBookingTime.value = newBookingTime;
 
   final BookingTime bookingTime;
   ValueNotifier<List<Booking>> _bookings;
@@ -45,6 +54,7 @@ class GlobalData {
   ValueNotifier<List<Booking>> get bookings => _bookings;
 
   bool get isBookingActive => _activeBooking.value != null;
+
 
   void pushBookings() {
     // TODO(styrix): add merging of bookings

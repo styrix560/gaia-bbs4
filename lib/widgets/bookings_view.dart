@@ -30,15 +30,16 @@ class BookingsView extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bookingTime = useState(BookingTime.afternoon);
-    final seatCells = useMemoized(() => initSeatCells(bookingTime.value), [
-      bookingTime.value,
+    final globalData = GlobalData();
+    final bookingTime = globalData.bookingTime;
+    final seatCells = useMemoized(() => initSeatCells(bookingTime), [
+      bookingTime,
     ]);
-    final globalData = GlobalData(bookingTime.value);
     useListenableSelector(
       globalData.activeBooking,
       () => globalData.isBookingActive,
     );
+    useListenable(GlobalData.currentBookingTime);
     useListenable(globalData.isTransactionInProgress);
 
     final maxRowLength = rowWidths.max;
@@ -53,11 +54,15 @@ class BookingsView extends HookWidget {
         Row(
           children: [
             CustomMenuButton(
-                bookingTime.value, BookingTime.values, (p0) => p0.germanName,
-                (newBookingTime) {
-              if (newBookingTime == null) return;
-              bookingTime.value = newBookingTime;
-            }),
+              bookingTime,
+              BookingTime.values,
+              (p0) => p0.germanName,
+              (newBookingTime) {
+                if (newBookingTime == null) return;
+                globalData.bookingTime = newBookingTime;
+              },
+              disabled: transactionsDisabled,
+            ),
             const Spacer(),
             FilledButton(
               onPressed: transactionsDisabled ? null : globalData.loadBookings,
@@ -89,7 +94,7 @@ class BookingsView extends HookWidget {
               if (width < maxRowLength) Spacer(flex: maxRowLength - width),
             ],
           ),
-        EditBookingWidget(bookingTime.value),
+        EditBookingWidget(),
       ],
     );
   }

@@ -11,7 +11,7 @@ class PaidPriceWidget extends HookWidget {
 
   final BookingTime bookingTime;
 
-  int get pricePerSeat => GlobalData(bookingTime)
+  int get pricePerSeat => GlobalData.fromTime(bookingTime)
       .activeBooking
       .value!
       .priceType
@@ -19,7 +19,7 @@ class PaidPriceWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final globalData = GlobalData(bookingTime);
+    final globalData = GlobalData.fromTime(bookingTime);
     final activeBooking = globalData.activeBooking.value;
     final pricePaid = useState(activeBooking?.pricePaid ?? 0);
     final controller =
