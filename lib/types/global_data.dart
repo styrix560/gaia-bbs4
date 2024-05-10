@@ -12,12 +12,14 @@ import "seat.dart";
 class GlobalData extends ChangeNotifier {
   // TODO(styrix): use seperate ChangeNotifiers for activeBooking and bookings
   factory GlobalData(BookingTime bookingTime) {
-    switch (bookingTime) {
-      case BookingTime.afternoon:
-        return _afternoon;
-      case BookingTime.evening:
-        return _evening;
+    if (!datas.containsKey(bookingTime)) {
+      datas[bookingTime] = GlobalData._internal(
+        [],
+        null,
+        bookingTime,
+      );
     }
+    return datas[bookingTime]!;
   }
 
   GlobalData._internal(
@@ -28,16 +30,7 @@ class GlobalData extends ChangeNotifier {
     loadBookings();
   }
 
-  static final GlobalData _afternoon = GlobalData._internal(
-    [],
-    null,
-    BookingTime.afternoon,
-  );
-  static final GlobalData _evening = GlobalData._internal(
-    [],
-    null,
-    BookingTime.evening,
-  );
+  static final Map<BookingTime, GlobalData> datas = {};
 
   final BookingTime bookingTime;
   List<Booking> _bookings;
