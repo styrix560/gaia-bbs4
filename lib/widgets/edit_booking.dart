@@ -5,6 +5,7 @@ import "../types/booking_time.dart";
 import "../types/global_data.dart";
 import "../types/price_type.dart";
 import "../utils.dart";
+import "custom_menu_button.dart";
 import "price_paid.dart";
 
 class EditBookingWidget extends HookWidget {
@@ -120,19 +121,11 @@ class EditBookingWidget extends HookWidget {
                       space(),
                       Row(
                         children: [
-                          DropdownButton(
-                            value: priceType.value,
-                            focusColor: Colors.transparent,
-                            padding: const EdgeInsets.only(left: 8, right: 8),
-                            items: <DropdownMenuItem<PriceType>>[
-                              for (final PriceType priceType
-                                  in PriceType.values)
-                                DropdownMenuItem(
-                                  value: priceType,
-                                  child: Text(priceType.germanName),
-                                ),
-                            ],
-                            onChanged: onPriceTypeChanged,
+                          CustomMenuButton(
+                            priceType.value,
+                            PriceType.values,
+                            (priceType) => priceType.germanName,
+                            onPriceTypeChanged,
                           ),
                           space(width: 16),
                           Text(

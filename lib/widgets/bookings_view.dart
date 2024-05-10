@@ -8,15 +8,14 @@ import "../types/global_data.dart";
 import "../types/grid_definition.dart";
 import "../types/seat.dart";
 import "../utils.dart";
+import "custom_menu_button.dart";
 import "edit_booking.dart";
 import "seat_cell.dart";
 
 class BookingsView extends HookWidget {
-  const BookingsView(this.bookingTime, {super.key});
+  const BookingsView({super.key});
 
-  final BookingTime bookingTime;
-
-  Map<Seat, SeatCellWidget> initSeatCells() {
+  Map<Seat, SeatCellWidget> initSeatCells(BookingTime bookingTime) {
     final seatCells = <Seat, SeatCellWidget>{};
 
     for (final (y, width) in rowWidths.indexed) {
@@ -31,8 +30,11 @@ class BookingsView extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final seatCells = useRef(initSeatCells());
-    final globalData = GlobalData(bookingTime);
+    final bookingTime = useState(BookingTime.afternoon);
+    final seatCells = useMemoized(() => initSeatCells(bookingTime.value), [
+      bookingTime.value,
+    ]);
+    final globalData = GlobalData(bookingTime.value);
     useListenableSelector(globalData, () => globalData.isBookingActive);
     useListenable(globalData.isTransactionInProgress);
 
@@ -47,6 +49,12 @@ class BookingsView extends HookWidget {
       children: [
         Row(
           children: [
+            CustomMenuButton(
+                bookingTime.value, BookingTime.values, (p0) => p0.germanName,
+                (newBookingTime) {
+              if (newBookingTime == null) return;
+              bookingTime.value = newBookingTime;
+            }),
             const Spacer(),
             FilledButton(
               onPressed: transactionsDisabled ? null : globalData.loadBookings,
@@ -74,11 +82,11 @@ class BookingsView extends HookWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (width < maxRowLength) Spacer(flex: maxRowLength - width),
-              for (var x = 0; x < width; x++) seatCells.value[Seat(y, x)]!,
+              for (var x = 0; x < width; x++) seatCells[Seat(y, x)]!,
               if (width < maxRowLength) Spacer(flex: maxRowLength - width),
             ],
           ),
-        EditBookingWidget(bookingTime),
+        EditBookingWidget(bookingTime.value),
       ],
     );
   }
