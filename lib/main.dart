@@ -20,12 +20,27 @@ Future<void> main() async {
     minLogLevel: kDebugMode ? LogLevel.trace : LogLevel.config,
   );
 
-  await Config.loadConfig("assets/config.json");
+  final configFound = await Config.loadConfig("assets/config.json");
 
   runApp(MaterialApp(
     scaffoldMessengerKey: scaffoldKey,
-    home: const MainApp(),
+    home: configFound ? const MainApp() : const ConfigMissingApp(),
   ));
+}
+
+class ConfigMissingApp extends StatelessWidget {
+  const ConfigMissingApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text("Die Konfigurationsdateien wurden nicht gefunden. "
+            "Bitte die Dateien unter data/flutter_assets/assets einfügen "
+            "und die Applikation neustarten"),
+      ),
+    );
+  }
 }
 
 class MainApp extends HookWidget {
@@ -47,7 +62,7 @@ class MainApp extends HookWidget {
         ]),
       ),
       body: Padding(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         child: TabBarView(controller: tabController, children: [
           const SingleChildScrollView(child: BookingsView()),
           OverviewWidget(tabController),
