@@ -9,7 +9,7 @@ import "widgets/overview.dart";
 
 final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
-// TODO(styrix): add overview
+// TODO(styrix): make overview UI prettier
 // TODO(styrix): add searching
 // TODO(styrix): add printing of overview
 Future<void> main() async {
