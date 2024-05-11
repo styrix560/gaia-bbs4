@@ -2,7 +2,7 @@
 
 ## About
 
-This application is used to organize and visualize the bookings of the seats of the [Concert Hall](https://www.konzertkirche-nb.de/) in Neubrandenburg. This includes visualizing which seats are free, taken, booked more than once and whether they are already paid for. It also helps with more easily keeping track of the amounts of money paid per booking and offers useful statistics about the entirety of the bookings.\
+This application is used to organize and visualize the bookings of the seats of the [Concert Hall](https://www.konzertkirche-nb.de/) in Neubrandenburg. This includes visualizing which seats are free, taken, booked more than once and whether they are already paid for. It also helps with more easily keeping track of the amounts of money paid per booking and offers useful statistics about the entirety of the bookings.
 
 ## Name
 
@@ -24,7 +24,7 @@ The system I came up with was the following: take the number of bookings per sea
 1  - seat is not booked, but paid? this state is impossible\
 2  - seat is booked once, but not paid yet\
 3  - seat is booked once, and paid\
-4+ - seat is booked more than once. we do not care about whether it is paid or not, the ambiguity has to be removed first\
+4+ - seat is booked more than once. we do not care about whether it is paid or not, the ambiguity has to be removed first
 
 ### Version 2 - Google Apps Script (2022)
 
