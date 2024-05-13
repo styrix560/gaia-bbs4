@@ -1,8 +1,8 @@
 import "dart:math";
 
-import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
+import "package:supernova/supernova.dart" hide IterableSorted;
 
 import "../types/booking_time.dart";
 import "../types/global_data.dart";
@@ -11,6 +11,8 @@ import "../utils.dart";
 import "custom_menu_button.dart";
 
 class OverviewWidget extends HookWidget {
+  static String _lastQueryValue = "";
+
   const OverviewWidget(this.parentTabController, {super.key});
 
   final TabController parentTabController;
@@ -42,8 +44,15 @@ class OverviewWidget extends HookWidget {
     useListenable(globalData.isTransactionInProgress);
     useListenable(GlobalData.currentBookingTime);
 
-    final searchQuery = useTextEditingController();
-    final rebuild = useRebuild();
+    final searchQuery = useTextEditingController(text: _lastQueryValue);
+    useListenable(searchQuery);
+    useEffect(
+      () {
+        _lastQueryValue = searchQuery.text;
+        return () {};
+      },
+      [searchQuery.text],
+    );
 
     return Column(
       children: [
@@ -63,7 +72,6 @@ class OverviewWidget extends HookWidget {
             SizedBox(
               width: 300,
               child: TextFormField(
-                onChanged: (value) => rebuild(),
                 controller: searchQuery,
                 decoration: const InputDecoration(
                   suffixIcon: Icon(Icons.search),
