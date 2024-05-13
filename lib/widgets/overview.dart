@@ -7,6 +7,7 @@ import "package:flutter_hooks/flutter_hooks.dart";
 import "../types/booking_time.dart";
 import "../types/global_data.dart";
 import "../types/seat.dart";
+import "../utils.dart";
 import "custom_menu_button.dart";
 
 class OverviewWidget extends HookWidget {
@@ -40,6 +41,10 @@ class OverviewWidget extends HookWidget {
     final globalData = GlobalData();
     useListenable(globalData.isTransactionInProgress);
     useListenable(GlobalData.currentBookingTime);
+
+    final searchQuery = useTextEditingController();
+    final rebuild = useRebuild();
+
     return Column(
       children: [
         Row(
@@ -54,8 +59,21 @@ class OverviewWidget extends HookWidget {
               },
               disabled: globalData.isTransactionInProgress.value,
             ),
+            const Spacer(),
+            SizedBox(
+              width: 300,
+              child: TextFormField(
+                onChanged: (value) => rebuild(),
+                controller: searchQuery,
+                decoration: const InputDecoration(
+                  suffixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
           ],
         ),
+        space(height: 16),
         Table(
           border: const TableBorder(
             horizontalInside: BorderSide(),
@@ -66,7 +84,8 @@ class OverviewWidget extends HookWidget {
           ),
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           children: [
-            for (final booking in globalData.bookings.value)
+            for (final booking in globalData.bookings.value
+                .where((element) => element.matches(searchQuery.text)))
               TableRow(
                 children: [
                   Text(booking.lastName),

@@ -48,6 +48,11 @@ class Booking {
         },
       );
 
+  bool matches(String query) =>
+      firstName.toLowerCase().contains(query.toLowerCase()) ||
+      lastName.toLowerCase().contains(query.toLowerCase()) ||
+      className.toLowerCase().contains(query.toLowerCase());
+
   @override
   String toString() {
     return "Booking($id, $lastName, $firstName, (${seats.join(" / ")}) "

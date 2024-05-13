@@ -113,7 +113,6 @@ class SeatCellWidget extends HookWidget {
     final globalData = GlobalData.fromTime(bookingTime);
     final activeBooking = globalData.activeBooking.value;
     final clickedBookings = globalData.getBookingsContainingSeat(seat);
-    // TODO(styrix): handle more than one booking per seat
     assert(clickedBookings.length < 2);
 
     if (clickedBookings.length == 1) {

@@ -57,7 +57,6 @@ class GlobalData {
 
 
   void pushBookings() {
-    // TODO(styrix): add merging of bookings
     isTransactionInProgress.value = true;
     // ignore: prefer-async-await
     Api.writeBookings(bookingTime.germanName, _bookings.value)

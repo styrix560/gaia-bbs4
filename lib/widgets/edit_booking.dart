@@ -52,7 +52,6 @@ class EditBookingWidget extends HookWidget {
       return () => globalData.activeBooking.removeListener(listenable);
     });
 
-    // TODO(styrix560): modularize this
     Form buildForm() {
       final globalData = GlobalData();
       return Form(

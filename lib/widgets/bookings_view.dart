@@ -47,7 +47,6 @@ class BookingsView extends HookWidget {
     final transactionsDisabled =
         globalData.isBookingActive || globalData.isTransactionInProgress.value;
 
-    // TODO(styrix): use "Rang" instead of "R" for ranks 21 or higher
     // TODO(styrix): get feedback for the EditBookingsWidget
     return Column(
       children: [
