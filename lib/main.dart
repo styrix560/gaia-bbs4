@@ -9,7 +9,6 @@ import "widgets/overview.dart";
 
 final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
-// TODO(styrix): add searching
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
