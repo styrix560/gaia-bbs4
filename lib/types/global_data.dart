@@ -1,19 +1,22 @@
-import "package:flutter/cupertino.dart";
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:supernova/supernova.dart";
 
-import "../api.dart";
-import "../utils.dart";
+import "../../utils.dart";
+import "../api/api.dart";
 import "booking.dart";
 import "booking_time.dart";
 import "price_type.dart";
 import "seat.dart";
 
 class GlobalData {
-  factory GlobalData() {
-    return GlobalData.fromTime(currentBookingTime.value);
-  }
+  factory GlobalData([BookingTime? bookingTime]) =>
+      GlobalData.fromTime(bookingTime ?? currentBookingTime.value);
+
+  GlobalData._internal(
+    this._bookings,
+    this._activeBooking,
+    this.bookingTime,
+  );
 
   factory GlobalData.fromTime(BookingTime bookingTime) {
     if (!globalDataInstances.containsKey(bookingTime)) {
@@ -26,40 +29,14 @@ class GlobalData {
     return globalDataInstances[bookingTime]!;
   }
 
-  GlobalData._internal(
-    this._bookings,
-    this._activeBooking,
-    this.bookingTime,
-  ) {
-    loadBookings();
-  }
-
   static final Map<BookingTime, GlobalData> globalDataInstances = {};
-
-  static final ValueNotifier<BookingTime> currentBookingTime =
-      ValueNotifier(BookingTime.afternoon);
-
-  set bookingTime(BookingTime newBookingTime) =>
-      currentBookingTime.value = newBookingTime;
-
-  final BookingTime bookingTime;
-  ValueNotifier<List<Booking>> _bookings;
-  ValueNotifier<Booking?> _activeBooking;
-
-  final isTransactionInProgress = ValueNotifier(false);
-  final Uuid uuid = const Uuid();
-
-  ValueNotifier<Booking?> get activeBooking => _activeBooking;
-
-  ValueNotifier<List<Booking>> get bookings => _bookings;
-
-  bool get isBookingActive => _activeBooking.value != null;
-
+  static late final Api api;
 
   void pushBookings() {
     isTransactionInProgress.value = true;
     // ignore: prefer-async-await
-    Api.writeBookings(bookingTime.germanName, _bookings.value)
+    api
+        .writeBookings(bookingTime.germanName, bookings.value)
         .then((_) => snackbar("Buchungen erfolgreich geschrieben"))
         .onError(
       (error, stackTrace) {
@@ -74,9 +51,10 @@ class GlobalData {
   void loadBookings() {
     isTransactionInProgress.value = true;
     // ignore: prefer-async-await
-    Api.getBookings(bookingTime.germanName)
+    api
+        .getBookings(bookingTime.germanName)
         .then((value) {
-          _bookings.value = value;
+          bookings.value = value;
         })
         .then((_) => snackbar("Buchungen erfolreich geladen"))
         .onError((error, stackTrace) {
@@ -90,6 +68,25 @@ class GlobalData {
           isTransactionInProgress.value = false;
         });
   }
+
+  static final ValueNotifier<BookingTime> currentBookingTime =
+      ValueNotifier(BookingTime.afternoon);
+
+  set bookingTime(BookingTime newBookingTime) =>
+      currentBookingTime.value = newBookingTime;
+
+  final BookingTime bookingTime;
+  final ValueNotifier<List<Booking>> _bookings;
+  final ValueNotifier<Booking?> _activeBooking;
+
+  final isTransactionInProgress = ValueNotifier(false);
+  final Uuid uuid = const Uuid();
+
+  ValueNotifier<Booking?> get activeBooking => _activeBooking;
+
+  ValueNotifier<List<Booking>> get bookings => _bookings;
+
+  bool get isBookingActive => _activeBooking.value != null;
 
   void updateActiveBooking({
     String? firstName,

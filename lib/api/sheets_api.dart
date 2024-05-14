@@ -2,15 +2,16 @@ import "package:encrypt/encrypt.dart";
 import "package:gsheets/gsheets.dart";
 import "package:supernova/supernova.dart";
 
-import "types/booking.dart";
-import "types/config.dart";
-import "types/price_type.dart";
-import "types/seat.dart";
+import "../types/booking.dart";
+import "../types/config.dart";
+import "../types/price_type.dart";
+import "../types/seat.dart";
+import "api.dart";
 
-class Api {
+class SheetsApi extends Api {
   static final _gsheets = GSheets(Config.getApiSecret());
 
-  static Future<List<Booking>> getBookings(String sheetName) async {
+  Future<List<Booking>> getBookings(String sheetName) async {
     logger.info("getting Bookings from api");
 
     final key = Config.getAesKey();
@@ -51,8 +52,7 @@ class Api {
     return bookings;
   }
 
-  static Future<void> writeBookings(
-      String sheetName, List<Booking> bookings) async {
+  Future<void> writeBookings(String sheetName, List<Booking> bookings) async {
     logger.info("writing bookings to api");
 
     final key = Config.getAesKey();
