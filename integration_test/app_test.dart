@@ -18,18 +18,8 @@ void main() {
       scaffoldMessengerKey: scaffoldKey,
       home: const MainApp(),
     ));
-    await tester.pumpAndSettle();
 
-    print("waiting for bookings to arrive from api");
-    await Future.delayed(const Duration(seconds: 5));
-
-    // TODO(styrix): remove this api call
     final globalData = GlobalData();
-
-    // delete all bookings
-    globalData.bookings.value = [];
-
-    await tester.pumpAndSettle();
 
     final seat = find.text("R1 P1");
     print("finding seat");
