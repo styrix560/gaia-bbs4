@@ -6,25 +6,27 @@ jobs:
   test: 
     runs-on: windows-latest
     steps:
+      - name: Configure git long paths
+        run: |
+          git config --system core.longpaths true
+    
       - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Integration Testing
+      - name: Install flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Integration testing
         run: "flutter test integration_test"
         
   build:
     needs: test
     runs-on: windows-latest
-    steps:
-      - name: Configure
-        run: |
-          git config --system core.longpaths true
-        
+    steps:        
       - name: Build
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-      - run: flutter build windows
+        run: flutter build windows
 
       - name: Compress
         run: |
