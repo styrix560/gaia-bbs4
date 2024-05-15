@@ -24,7 +24,11 @@ jobs:
   build:
     needs: test
     runs-on: windows-latest
-    steps:        
+    steps:
+      - name: Install flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
       - name: Build
         run: flutter build windows
 
