@@ -1,20 +1,24 @@
 name: Flutter Build
 
-on:
-  push:
-    tags:
-      - 'v*.*.*'
+on: push
 
 jobs:
+  test: 
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Integration Testing
+        run: "flutter test integration_test"
+        
   build:
+    needs: test
     runs-on: windows-latest
     steps:
       - name: Configure
         run: |
           git config --system core.longpaths true
-    
-      - name: Checkout
-        uses: actions/checkout@v4
         
       - name: Build
         uses: subosito/flutter-action@v2
@@ -29,6 +33,7 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           draft: false
           prerelease: false
