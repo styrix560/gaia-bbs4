@@ -69,7 +69,10 @@ class MainApp extends HookWidget {
       body: Padding(
         padding: const EdgeInsets.all(8),
         child: TabBarView(controller: tabController, children: [
-          const SingleChildScrollView(child: BookingsView()),
+          const SingleChildScrollView(
+            key: Key("BookingsViewScroller"),
+            child: BookingsView(),
+          ),
           OverviewWidget(tabController),
         ]),
       ),

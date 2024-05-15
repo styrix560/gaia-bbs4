@@ -16,7 +16,9 @@ class GlobalData {
     this._bookings,
     this._activeBooking,
     this.bookingTime,
-  );
+  ) {
+    loadBookings();
+  }
 
   factory GlobalData.fromTime(BookingTime bookingTime) {
     if (!globalDataInstances.containsKey(bookingTime)) {
@@ -50,7 +52,6 @@ class GlobalData {
 
   void loadBookings() {
     isTransactionInProgress.value = true;
-    // ignore: prefer-async-await
     api
         .getBookings(bookingTime.germanName)
         .then((value) {
