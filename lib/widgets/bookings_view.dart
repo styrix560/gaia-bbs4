@@ -93,7 +93,7 @@ class BookingsView extends HookWidget {
               if (width < maxRowLength) Spacer(flex: maxRowLength - width),
             ],
           ),
-        EditBookingWidget(),
+        const EditBookingWidget(),
       ],
     );
   }

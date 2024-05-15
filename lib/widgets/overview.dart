@@ -11,9 +11,9 @@ import "../utils.dart";
 import "custom_menu_button.dart";
 
 class OverviewWidget extends HookWidget {
-  static String _lastQueryValue = "";
-
   const OverviewWidget(this.parentTabController, {super.key});
+
+  static String _lastQueryValue = "";
 
   final TabController parentTabController;
 
@@ -106,11 +106,12 @@ class OverviewWidget extends HookWidget {
                   Text(booking.priceType.germanName),
                   Text(booking.comments),
                   OutlinedButton(
-                      onPressed: () {
-                        globalData.changeActiveBooking(booking);
-                        parentTabController.animateTo(0);
-                      },
-                      child: Text("Buchung\naktivieren")),
+                    onPressed: () {
+                      globalData.changeActiveBooking(booking);
+                      parentTabController.animateTo(0);
+                    },
+                    child: const Text("Buchung\naktivieren"),
+                  ),
                 ]
                     .map((e) => Padding(
                           padding: const EdgeInsets.all(8),

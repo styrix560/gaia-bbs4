@@ -4,6 +4,7 @@ import "booking_time.dart";
 import "price_type.dart";
 import "seat.dart";
 
+@immutable
 class Booking {
   const Booking(
     this.id,
@@ -54,8 +55,34 @@ class Booking {
       className.toLowerCase().contains(query.toLowerCase());
 
   @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is Booking &&
+            runtimeType == other.runtimeType &&
+            id == other.id &&
+            firstName == other.firstName &&
+            lastName == other.lastName &&
+            className == other.className &&
+            const SetEquality<Seat>().equals(seats, other.seats) &&
+            pricePaid == other.pricePaid &&
+            priceType == other.priceType &&
+            comments == other.comments;
+  }
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      firstName.hashCode ^
+      lastName.hashCode ^
+      className.hashCode ^
+      seats.hashCode ^
+      pricePaid.hashCode ^
+      priceType.hashCode ^
+      comments.hashCode;
+
+  @override
   String toString() {
-    return "Booking($id, $lastName, $firstName, (${seats.join(" / ")}) "
+    return "Booking($id, $lastName, $firstName, (${seats.join(" / ")}), "
         "$pricePaid, $priceType, $comments)";
   }
 }
