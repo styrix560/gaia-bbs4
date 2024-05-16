@@ -3,7 +3,7 @@ name: Flutter Build
 on: push
 
 jobs:
-  test: 
+  test-and-build: 
     runs-on: windows-latest
     steps:
       - name: Configure git long paths
@@ -25,28 +25,7 @@ jobs:
 
       - name: Integration testing
         run: "flutter test integration_test"
-        
-  build:
-    needs: test
-    runs-on: windows-latest
-    steps:
-      - name: Configure git long paths
-        run: |
-          git config --system core.longpaths true
-    
-      - name: Checkout
-        uses: actions/checkout@v4
-   
-      - name: Install flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:" # optional, change this to force refresh cache
-          cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:" # optional, change this to specify the cache path
-          pub-cache-key: "flutter-pub-:os:-:channel:-:version:-:arch:-:hash:" # optional, change this to force refresh cache of dart pub get dependencies
-          pub-cache-path: "C:/Users/runneradmin/AppData/Local/Pub/Cache" # optional, change this to specify the cache path
-
+  
       - name: Build
         run: flutter build windows
 
