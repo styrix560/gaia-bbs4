@@ -118,12 +118,12 @@ Future<void> main() async {
       "Musterklasse",
       () => activeBooking.value!.className,
     );
-    // await deleteThenEnter(
-    //   tester,
-    //   "comments",
-    //   "Muster-Kommentare",
-    //   () => activeBooking.value!.comments,
-    // );
+    await testTextField(
+      tester,
+      "comments",
+      "Muster-Kommentare\nmit neuer Zeile!",
+      () => activeBooking.value!.comments,
+    );
     print("saving booking");
     final saveButton = find.text("Buchung speichern");
     expect(saveButton, findsOne);
@@ -151,7 +151,7 @@ Future<void> main() async {
         },
         0,
         PriceType.normal,
-        "comments",
+        "Muster-Kommentare\nmit neuer Zeile!",
       ),
     );
   });
