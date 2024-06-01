@@ -24,6 +24,7 @@ class EditBookingWidget extends HookWidget {
     final lastName = useTextEditingController();
     final firstName = useTextEditingController();
     final className = useTextEditingController();
+    final comments = useTextEditingController();
 
     void onPriceTypeChanged(PriceType? value) {
       if (value == null || value == priceType.value) return;
@@ -38,6 +39,7 @@ class EditBookingWidget extends HookWidget {
       firstName.text = activeBooking?.firstName ?? firstName.text;
       lastName.text = activeBooking?.lastName ?? lastName.text;
       className.text = activeBooking?.className ?? className.text;
+      comments.text = activeBooking?.comments ?? comments.text;
       numberOfSeat.value = activeBooking?.seats.length ?? 0;
       priceType.value = activeBooking?.priceType ?? PriceType.normal;
     }
@@ -143,6 +145,18 @@ class EditBookingWidget extends HookWidget {
                     ],
                   ),
                 ],
+              ),
+            ),
+            space(height: 16),
+            TextFormField(
+              onChanged: (value) =>
+                  globalData.updateActiveBooking(comments: value),
+              controller: comments,
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
+              decoration: const InputDecoration(
+                hintText: "Kommentare",
+                border: OutlineInputBorder(),
               ),
             ),
           ],
