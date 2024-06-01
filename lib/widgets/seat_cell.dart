@@ -126,7 +126,8 @@ class SeatCellWidget extends HookWidget {
       return;
     }
 
-    final newSeats = activeBooking!.seats;
+    // make a copy to avoid changing the reference in activeBooking
+    final newSeats = Set.of(activeBooking!.seats);
     if (newSeats.contains(seat)) {
       newSeats.remove(seat);
     } else {
