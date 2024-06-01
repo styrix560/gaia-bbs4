@@ -1,17 +1,15 @@
 # BBS4 - Gaia
 
 ## About
----
+
 This application is used to organize and visualize the bookings of the seats of the [Concert Hall](https://www.konzertkirche-nb.de/) in Neubrandenburg. This includes visualizing which seats are free, taken, booked more than once and whether they are already paid for. It also helps with more easily keeping track of the amounts of money paid per booking and offers useful statistics about the entirety of the bookings.
 
 ## Name
----
 
 BBS4 stands for Benefiz-Buchungs-System 4. This roughly translates to beneficiary-bookings-system 4. The name stems from the fact, that it is mainly used by the Albert-Einstein-Gymnasium in Neubrandenburg to organize their yearly beneficiary concerts. Also, it is the 4th iteration I have done of this kind of system (See also: History).\
 Its codename is Gaia. This is the first 'proper' application I have produced that is a) usable and b) being used. So, like Gaia it came before everything else.
 
 ## History
----
 
 ### Version 1 - Google Sheets (2021)
 
