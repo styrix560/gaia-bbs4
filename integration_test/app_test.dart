@@ -161,7 +161,7 @@ Future<void> main() async {
 }
 
 Future<void> wait([int seconds = 5]) async {
-  await Future.delayed(Duration(seconds: seconds));
+  await Future.delayed(Duration(seconds: seconds), () {});
 }
 
 Future<void> clickSeat(WidgetTester tester, String seatText) async {
