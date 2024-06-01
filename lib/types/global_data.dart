@@ -55,7 +55,7 @@ class GlobalData {
     api
         .getBookings(bookingTime.germanName)
         .then((value) {
-          bookings.value = value;
+          bookings.value = mergeBookings(bookings.value, value);
         })
         .then((_) => snackbar("Buchungen erfolreich geladen"))
         .onError((error, stackTrace) {
@@ -146,5 +146,21 @@ class GlobalData {
     logger.debug("initialize active booking");
     _activeBooking.value =
         Booking(uuid.v4(), "", "", "", {firstSeat}, 0, PriceType.normal, "");
+  }
+
+  // Local changes take absolute precedence. Only if the external bookings
+  // contain a booking, that we do not know at all, we add it to the list
+  static List<Booking> mergeBookings(
+    List<Booking> internal,
+    List<Booking> external,
+  ) {
+    final keysToBookings = <String, Booking>{
+      for (final booking in internal) booking.id: booking,
+    };
+    keysToBookings.addAll({
+      for (final booking in external)
+        if (!keysToBookings.containsKey(booking.id)) booking.id: booking,
+    });
+    return keysToBookings.values.toList();
   }
 }
