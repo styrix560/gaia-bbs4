@@ -34,40 +34,33 @@ class GlobalData {
   static final Map<BookingTime, GlobalData> globalDataInstances = {};
   static late final Api api;
 
-  void pushBookings() {
+  Future<void> pushBookings() async {
     isTransactionInProgress.value = true;
-    // ignore: prefer-async-await
-    api
-        .writeBookings(bookingTime.germanName, bookings.value)
-        .then((_) => snackbar("Buchungen erfolgreich geschrieben"))
-        .onError(
-      (error, stackTrace) {
-        logger.error("error pushing changes to db", error, stackTrace);
-        snackbar("Fehler beim Schreiben der Buchungen");
-      },
-    ).then((_) {
-      isTransactionInProgress.value = false;
-    });
+    try {
+      await api.writeBookings(bookingTime.germanName, bookings.value);
+    } on Exception catch (error, stacktrace) {
+      logger.error("error pushing changes to db", error, stacktrace);
+      snackbar("Fehler beim Schreiben der Buchungen");
+    }
+    snackbar("Buchungen erfolgreich geschrieben");
+    isTransactionInProgress.value = false;
   }
 
-  void loadBookings() {
+  Future<void> loadBookings() async {
     isTransactionInProgress.value = true;
-    api
-        .getBookings(bookingTime.germanName)
-        .then((value) {
-          bookings.value = mergeBookings(bookings.value, value);
-        })
-        .then((_) => snackbar("Buchungen erfolreich geladen"))
-        .onError((error, stackTrace) {
-          logger.error("error loading bookings", error, stackTrace);
-          snackbar(
-            "Fehler beim Laden der Buchungen. Ist Internet aktiviert und "
-            "geht die Uhr richtig?",
-          );
-        })
-        .then((value) {
-          isTransactionInProgress.value = false;
-        });
+    late final List<Booking> newBookings;
+    try {
+      newBookings = await api.getBookings(bookingTime.germanName);
+    } on Exception catch (error, stacktrace) {
+      logger.error("error loading bookings", error, stacktrace);
+      snackbar(
+        "Fehler beim Laden der Buchungen. Ist Internet aktiviert und "
+        "geht die Uhr richtig?",
+      );
+    }
+    bookings.value = mergeBookings(bookings.value, newBookings);
+    snackbar("Buchungen erfolgreich geladen");
+    isTransactionInProgress.value = false;
   }
 
   static final ValueNotifier<BookingTime> currentBookingTime =

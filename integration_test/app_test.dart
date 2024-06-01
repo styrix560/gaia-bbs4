@@ -88,8 +88,7 @@ Future<void> main() async {
     ));
 
     final globalData = GlobalData();
-    globalData.loadBookings();
-    await wait(1); // let bookings finish
+    await globalData.loadBookings();
     await tester.pumpAndSettle();
 
     expect(globalData.activeBooking.value, null);
