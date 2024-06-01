@@ -6,7 +6,6 @@ import "../types/booking_time.dart";
 import "../types/global_data.dart";
 import "../types/price_type.dart";
 import "../types/seat.dart";
-import "../utils.dart";
 
 class SeatCellWidget extends HookWidget {
   const SeatCellWidget(
@@ -25,26 +24,26 @@ class SeatCellWidget extends HookWidget {
     final seat = Seat(y, x);
     final globalData = GlobalData.fromTime(bookingTime);
     final activeBooking = globalData.activeBooking.value;
-    final rebuild = useRebuild();
-    final previousBooking = useRef<Booking?>(null);
+    // final rebuild = useRebuild();
+    // final previousBooking = useRef<Booking?>(null);
     useListenable(globalData.activeBooking);
     useListenable(globalData.bookings);
 
-    bool shouldRebuild() {
-      final prevBooking = previousBooking.value?.copy();
-      previousBooking.value = activeBooking?.copy();
-
-      bool isActive(Booking? booking) => booking?.seats.contains(seat) ?? false;
-      final isActiveNow = isActive(activeBooking);
-      final wasActiveBefore = isActive(prevBooking);
-      if (isActiveNow != wasActiveBefore) return true;
-      if (!isActiveNow) return false;
-
-      return activeBooking!.seats.length != prevBooking!.seats.length ||
-          activeBooking.lastName != prevBooking.lastName ||
-          activeBooking.pricePaid != prevBooking.pricePaid ||
-          activeBooking.priceType != prevBooking.priceType;
-    }
+    // bool shouldRebuild() {
+    //   final prevBooking = previousBooking.value?.copy();
+    //   previousBooking.value = activeBooking?.copy();
+    //
+    //   bool isActive(Booking? booking) => booking?.seats.contains(seat) ?? false;
+    //   final isActiveNow = isActive(activeBooking);
+    //   final wasActiveBefore = isActive(prevBooking);
+    //   if (isActiveNow != wasActiveBefore) return true;
+    //   if (!isActiveNow) return false;
+    //
+    //   return activeBooking!.seats.length != prevBooking!.seats.length ||
+    //       activeBooking.lastName != prevBooking.lastName ||
+    //       activeBooking.pricePaid != prevBooking.pricePaid ||
+    //       activeBooking.priceType != prevBooking.priceType;
+    // }
 
     Color getColor() {
       Color getColorForBooking(
@@ -126,7 +125,8 @@ class SeatCellWidget extends HookWidget {
       return;
     }
 
-    final newSeats = activeBooking!.seats;
+    // make a copy to avoid changing the reference in activeBooking
+    final newSeats = Set.of(activeBooking!.seats);
     if (newSeats.contains(seat)) {
       newSeats.remove(seat);
     } else {

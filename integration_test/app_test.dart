@@ -1,6 +1,7 @@
 import "package:bbs4/api/mock_api.dart";
 import "package:bbs4/main.dart";
 import "package:bbs4/types/booking.dart";
+import "package:bbs4/types/booking_time.dart";
 import "package:bbs4/types/global_data.dart";
 import "package:bbs4/types/price_type.dart";
 import "package:bbs4/types/seat.dart";
@@ -49,7 +50,7 @@ Future<void> main() async {
       home: const MainApp(),
     ));
 
-    final globalData = GlobalData();
+    final globalData = GlobalData(BookingTime.afternoon);
 
     await clickSeat(tester, "R1 P1");
 
@@ -88,8 +89,10 @@ Future<void> main() async {
     ));
 
     final globalData = GlobalData();
-    globalData.loadBookings();
-    await wait(1); // let bookings finish
+    // delete bookings to avoid merging
+    globalData.bookings.value = [];
+    await globalData.loadBookings();
+    await Future.delayed(const Duration(seconds: 1), () {});
     await tester.pumpAndSettle();
 
     expect(globalData.activeBooking.value, null);
@@ -158,7 +161,7 @@ Future<void> main() async {
 }
 
 Future<void> wait([int seconds = 5]) async {
-  await Future.delayed(Duration(seconds: seconds));
+  await Future.delayed(Duration(seconds: seconds), () {});
 }
 
 Future<void> clickSeat(WidgetTester tester, String seatText) async {
