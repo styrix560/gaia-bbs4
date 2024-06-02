@@ -3,17 +3,14 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:supernova/supernova.dart";
 
-import "../types/booking.dart";
 import "../types/booking_time.dart";
 import "../types/global_data.dart";
 import "../types/grid_definition.dart";
-import "../types/price_type.dart";
 import "../types/seat.dart";
 import "../utils.dart";
 import "custom_menu_button.dart";
 import "edit_booking.dart";
 import "seat_cell.dart";
-import "seat_disambiguation.dart";
 
 class BookingsView extends HookWidget {
   const BookingsView({super.key});
@@ -65,20 +62,20 @@ class BookingsView extends HookWidget {
               disabled: transactionsDisabled,
             ),
             const Spacer(),
-            FilledButton(
-              onPressed: () async {
-                final Booking? booking = await showDialog(
-                  context: context,
-                  builder: (context) => SeatDisambiguationWidget([
-                    Booking("id1", "Max", "Mustermann", "Musterklasse", {}, 0,
-                        PriceType.reduced, ""),
-                    Booking("id2", "Klaus", "Kinski", "sehr sauer", {}, 0,
-                        PriceType.reduced, ""),
-                  ]),
-                );
-              },
-              child: const Text("test"),
-            ),
+            // FilledButton(
+            //   onPressed: () async {
+            //     final Booking? booking = await showDialog(
+            //       context: context,
+            //       builder: (context) => SeatDisambiguationWidget([
+            //         Booking("id1", "Max", "Mustermann", "Musterklasse", {}, 0,
+            //             PriceType.reduced, ""),
+            //         Booking("id2", "Klaus", "Kinski", "sehr sauer", {}, 0,
+            //             PriceType.reduced, ""),
+            //       ]),
+            //     );
+            //   },
+            //   child: const Text("test"),
+            // ),
             FilledButton(
               onPressed: transactionsDisabled ? null : globalData.loadBookings,
               child: const Text("Buchungen zurücksetzen"),

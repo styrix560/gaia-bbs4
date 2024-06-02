@@ -54,7 +54,11 @@ class GlobalData {
         "geht die Uhr richtig?",
       );
     }
-    bookings.value = mergeBookings(bookings.value, newBookings);
+    bookings.value = mergeBookings(
+      bookings.value,
+      newBookings,
+      preferExternal: true,
+    );
     snackbar("Buchungen erfolgreich geladen");
     isTransactionInProgress.value = false;
   }
@@ -133,18 +137,22 @@ class GlobalData {
         Booking(uuid.v4(), "", "", "", {firstSeat}, 0, PriceType.normal, "");
   }
 
-  // Local changes take absolute precedence. Only if the external bookings
-  // contain a booking, that we do not know at all, we add it to the list
+  /// Merges two Lists of [Booking]s together. [preferExternal] signifies,
+  /// whether changes from the external source (i.e. the database) should
+  /// override local changes. This is effectively the case, when pulling.
+  /// Otherwise the local changes are more important.
   static List<Booking> mergeBookings(
     List<Booking> internal,
-    List<Booking> external,
-  ) {
+    List<Booking> external, {
+    required bool preferExternal,
+  }) {
     final keysToBookings = <String, Booking>{
       for (final booking in internal) booking.id: booking,
     };
     keysToBookings.addAll({
       for (final booking in external)
-        if (!keysToBookings.containsKey(booking.id)) booking.id: booking,
+        if (preferExternal || !keysToBookings.containsKey(booking.id))
+          booking.id: booking,
     });
     return keysToBookings.values.toList();
   }

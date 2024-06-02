@@ -5,6 +5,7 @@ import "../types/booking.dart";
 import "../types/global_data.dart";
 import "../types/price_type.dart";
 import "../types/seat.dart";
+import "seat_disambiguation.dart";
 
 class SeatCellWidget extends HookWidget {
   const SeatCellWidget(
@@ -89,7 +90,7 @@ class SeatCellWidget extends HookWidget {
       flex: 2,
       child: GestureDetector(
         onTapDown: (_) {
-          onClick(seat);
+          onClick(context, seat);
         },
         child: DecoratedBox(
           decoration: BoxDecoration(
@@ -106,11 +107,18 @@ class SeatCellWidget extends HookWidget {
     );
   }
 
-  void onClick(Seat seat) {
+  Future<void> onClick(BuildContext context, Seat seat) async {
     final globalData = GlobalData();
     final activeBooking = globalData.activeBooking.value;
     final clickedBookings = globalData.getBookingsContainingSeat(seat);
-    assert(clickedBookings.length < 2);
+    if (clickedBookings.length > 1) {
+      final selectedBooking = await showDialog<Booking>(
+        context: context,
+        builder: (context) => SeatDisambiguationWidget(clickedBookings),
+      );
+      globalData.changeActiveBooking(selectedBooking);
+      return;
+    }
 
     if (clickedBookings.length == 1) {
       final newBooking = clickedBookings.first;
