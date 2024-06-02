@@ -21,7 +21,7 @@ class BookingsView extends HookWidget {
     for (final (y, width) in rowWidths.indexed) {
       for (var x = 0; x < width; x++) {
         final seat = Seat(y, x);
-        seatCells[seat] = SeatCellWidget(x, y, bookingTime);
+        seatCells[seat] = SeatCellWidget(x, y);
       }
     }
 
@@ -31,7 +31,7 @@ class BookingsView extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final globalData = GlobalData();
-    final bookingTime = globalData.bookingTime;
+    final bookingTime = GlobalData.currentBookingTime.value;
     final seatCells = useMemoized(() => initSeatCells(bookingTime), [
       bookingTime,
     ]);
@@ -47,7 +47,6 @@ class BookingsView extends HookWidget {
     final transactionsDisabled =
         globalData.isBookingActive || globalData.isTransactionInProgress.value;
 
-    // TODO(styrix): get feedback for the EditBookingsWidget
     return Column(
       children: [
         Row(
@@ -58,11 +57,25 @@ class BookingsView extends HookWidget {
               (p0) => p0.germanName,
               (newBookingTime) {
                 if (newBookingTime == null) return;
-                globalData.bookingTime = newBookingTime;
+                GlobalData.currentBookingTime.value = newBookingTime;
               },
               disabled: transactionsDisabled,
             ),
             const Spacer(),
+            // FilledButton(
+            //   onPressed: () async {
+            //     final Booking? booking = await showDialog(
+            //       context: context,
+            //       builder: (context) => SeatDisambiguationWidget([
+            //         Booking("id1", "Max", "Mustermann", "Musterklasse", {}, 0,
+            //             PriceType.reduced, ""),
+            //         Booking("id2", "Klaus", "Kinski", "sehr sauer", {}, 0,
+            //             PriceType.reduced, ""),
+            //       ]),
+            //     );
+            //   },
+            //   child: const Text("test"),
+            // ),
             FilledButton(
               onPressed: transactionsDisabled ? null : globalData.loadBookings,
               child: const Text("Buchungen zurücksetzen"),

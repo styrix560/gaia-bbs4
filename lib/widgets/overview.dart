@@ -59,12 +59,12 @@ class OverviewWidget extends HookWidget {
         Row(
           children: [
             CustomMenuButton(
-              globalData.bookingTime,
+              GlobalData.currentBookingTime.value,
               BookingTime.values,
               (bookingTime) => bookingTime.germanName,
               (newBookingTime) {
                 if (newBookingTime == null) return;
-                globalData.bookingTime = newBookingTime;
+                GlobalData.currentBookingTime.value = newBookingTime;
               },
               disabled: globalData.isTransactionInProgress.value,
             ),

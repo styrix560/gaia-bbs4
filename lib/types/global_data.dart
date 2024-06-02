@@ -9,26 +9,21 @@ import "price_type.dart";
 import "seat.dart";
 
 class GlobalData {
-  factory GlobalData([BookingTime? bookingTime]) =>
-      GlobalData.fromTime(bookingTime ?? currentBookingTime.value);
+  factory GlobalData() {
+    if (!globalDataInstances.containsKey(currentBookingTime.value)) {
+      globalDataInstances[currentBookingTime.value] = GlobalData._internal(
+        ValueNotifier([]),
+        ValueNotifier(null),
+      );
+    }
+    return globalDataInstances[currentBookingTime.value]!;
+  }
 
   GlobalData._internal(
     this._bookings,
     this._activeBooking,
-    this.bookingTime,
   ) {
     loadBookings();
-  }
-
-  factory GlobalData.fromTime(BookingTime bookingTime) {
-    if (!globalDataInstances.containsKey(bookingTime)) {
-      globalDataInstances[bookingTime] = GlobalData._internal(
-        ValueNotifier([]),
-        ValueNotifier(null),
-        bookingTime,
-      );
-    }
-    return globalDataInstances[bookingTime]!;
   }
 
   static final Map<BookingTime, GlobalData> globalDataInstances = {};
@@ -37,7 +32,8 @@ class GlobalData {
   Future<void> pushBookings() async {
     isTransactionInProgress.value = true;
     try {
-      await api.writeBookings(bookingTime.germanName, bookings.value);
+      await api.writeBookings(
+          currentBookingTime.value.germanName, bookings.value);
     } on Exception catch (error, stacktrace) {
       logger.error("error pushing changes to db", error, stacktrace);
       snackbar("Fehler beim Schreiben der Buchungen");
@@ -50,7 +46,7 @@ class GlobalData {
     isTransactionInProgress.value = true;
     late final List<Booking> newBookings;
     try {
-      newBookings = await api.getBookings(bookingTime.germanName);
+      newBookings = await api.getBookings(currentBookingTime.value.germanName);
     } on Exception catch (error, stacktrace) {
       logger.error("error loading bookings", error, stacktrace);
       snackbar(
@@ -58,7 +54,11 @@ class GlobalData {
         "geht die Uhr richtig?",
       );
     }
-    bookings.value = mergeBookings(bookings.value, newBookings);
+    bookings.value = mergeBookings(
+      bookings.value,
+      newBookings,
+      preferExternal: true,
+    );
     snackbar("Buchungen erfolgreich geladen");
     isTransactionInProgress.value = false;
   }
@@ -66,10 +66,6 @@ class GlobalData {
   static final ValueNotifier<BookingTime> currentBookingTime =
       ValueNotifier(BookingTime.afternoon);
 
-  set bookingTime(BookingTime newBookingTime) =>
-      currentBookingTime.value = newBookingTime;
-
-  final BookingTime bookingTime;
   final ValueNotifier<List<Booking>> _bookings;
   final ValueNotifier<Booking?> _activeBooking;
 
@@ -141,18 +137,22 @@ class GlobalData {
         Booking(uuid.v4(), "", "", "", {firstSeat}, 0, PriceType.normal, "");
   }
 
-  // Local changes take absolute precedence. Only if the external bookings
-  // contain a booking, that we do not know at all, we add it to the list
+  /// Merges two Lists of [Booking]s together. [preferExternal] signifies,
+  /// whether changes from the external source (i.e. the database) should
+  /// override local changes. This is effectively the case, when pulling.
+  /// Otherwise the local changes are more important.
   static List<Booking> mergeBookings(
     List<Booking> internal,
-    List<Booking> external,
-  ) {
+    List<Booking> external, {
+    required bool preferExternal,
+  }) {
     final keysToBookings = <String, Booking>{
       for (final booking in internal) booking.id: booking,
     };
     keysToBookings.addAll({
       for (final booking in external)
-        if (!keysToBookings.containsKey(booking.id)) booking.id: booking,
+        if (preferExternal || !keysToBookings.containsKey(booking.id))
+          booking.id: booking,
     });
     return keysToBookings.values.toList();
   }

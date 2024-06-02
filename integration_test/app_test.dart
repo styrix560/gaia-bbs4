@@ -1,7 +1,6 @@
 import "package:bbs4/api/mock_api.dart";
 import "package:bbs4/main.dart";
 import "package:bbs4/types/booking.dart";
-import "package:bbs4/types/booking_time.dart";
 import "package:bbs4/types/global_data.dart";
 import "package:bbs4/types/price_type.dart";
 import "package:bbs4/types/seat.dart";
@@ -50,7 +49,7 @@ Future<void> main() async {
       home: const MainApp(),
     ));
 
-    final globalData = GlobalData(BookingTime.afternoon);
+    final globalData = GlobalData();
 
     await clickSeat(tester, "R1 P1");
 
