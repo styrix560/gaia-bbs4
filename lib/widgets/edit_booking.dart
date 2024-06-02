@@ -52,7 +52,8 @@ class EditBookingWidget extends HookWidget {
 
       globalData.activeBooking.addListener(listenable);
       return () => globalData.activeBooking.removeListener(listenable);
-    });
+    }, [GlobalData.currentBookingTime.value]);
+    useListenable(GlobalData.currentBookingTime);
 
     Form buildForm() {
       final globalData = GlobalData();
@@ -115,7 +116,7 @@ class EditBookingWidget extends HookWidget {
                   const VerticalDivider(
                     width: 32,
                   ),
-                  PaidPriceWidget(bookingTime.value),
+                  const PaidPriceWidget(),
                   const VerticalDivider(
                     width: 32,
                   ),
@@ -164,7 +165,7 @@ class EditBookingWidget extends HookWidget {
       );
     }
 
-    if (!GlobalData().isBookingActive) {
+    if (!globalData.isBookingActive) {
       return const SizedBox();
     }
     return Column(

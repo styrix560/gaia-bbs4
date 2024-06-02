@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
 import "../types/booking.dart";
-import "../types/booking_time.dart";
 import "../types/global_data.dart";
 import "../types/price_type.dart";
 import "../types/seat.dart";
@@ -10,19 +9,17 @@ import "../types/seat.dart";
 class SeatCellWidget extends HookWidget {
   const SeatCellWidget(
     this.x,
-    this.y,
-    this.bookingTime, {
+    this.y, {
     super.key,
   });
 
   final int x;
   final int y;
-  final BookingTime bookingTime;
 
   @override
   Widget build(BuildContext context) {
     final seat = Seat(y, x);
-    final globalData = GlobalData.fromTime(bookingTime);
+    final globalData = GlobalData();
     final activeBooking = globalData.activeBooking.value;
     // final rebuild = useRebuild();
     // final previousBooking = useRef<Booking?>(null);
@@ -48,7 +45,8 @@ class SeatCellWidget extends HookWidget {
     Color getColor() {
       Color getColorForBooking(
           Booking booking, Color colorIfPaid, Color colorIfNotPaid) {
-        final pricePerSeat = booking.priceType.calculatePrice(bookingTime);
+        final pricePerSeat = booking.priceType
+            .calculatePrice(GlobalData.currentBookingTime.value);
         final amountOfPaidSeats =
             pricePerSeat == 0 ? 1000 : booking.pricePaid ~/ pricePerSeat;
 
@@ -109,7 +107,7 @@ class SeatCellWidget extends HookWidget {
   }
 
   void onClick(Seat seat) {
-    final globalData = GlobalData.fromTime(bookingTime);
+    final globalData = GlobalData();
     final activeBooking = globalData.activeBooking.value;
     final clickedBookings = globalData.getBookingsContainingSeat(seat);
     assert(clickedBookings.length < 2);

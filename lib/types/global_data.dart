@@ -9,26 +9,21 @@ import "price_type.dart";
 import "seat.dart";
 
 class GlobalData {
-  factory GlobalData([BookingTime? bookingTime]) =>
-      GlobalData.fromTime(bookingTime ?? currentBookingTime.value);
+  factory GlobalData() {
+    if (!globalDataInstances.containsKey(currentBookingTime.value)) {
+      globalDataInstances[currentBookingTime.value] = GlobalData._internal(
+        ValueNotifier([]),
+        ValueNotifier(null),
+      );
+    }
+    return globalDataInstances[currentBookingTime.value]!;
+  }
 
   GlobalData._internal(
     this._bookings,
     this._activeBooking,
-    this.bookingTime,
   ) {
     loadBookings();
-  }
-
-  factory GlobalData.fromTime(BookingTime bookingTime) {
-    if (!globalDataInstances.containsKey(bookingTime)) {
-      globalDataInstances[bookingTime] = GlobalData._internal(
-        ValueNotifier([]),
-        ValueNotifier(null),
-        bookingTime,
-      );
-    }
-    return globalDataInstances[bookingTime]!;
   }
 
   static final Map<BookingTime, GlobalData> globalDataInstances = {};
@@ -37,7 +32,8 @@ class GlobalData {
   Future<void> pushBookings() async {
     isTransactionInProgress.value = true;
     try {
-      await api.writeBookings(bookingTime.germanName, bookings.value);
+      await api.writeBookings(
+          currentBookingTime.value.germanName, bookings.value);
     } on Exception catch (error, stacktrace) {
       logger.error("error pushing changes to db", error, stacktrace);
       snackbar("Fehler beim Schreiben der Buchungen");
@@ -50,7 +46,7 @@ class GlobalData {
     isTransactionInProgress.value = true;
     late final List<Booking> newBookings;
     try {
-      newBookings = await api.getBookings(bookingTime.germanName);
+      newBookings = await api.getBookings(currentBookingTime.value.germanName);
     } on Exception catch (error, stacktrace) {
       logger.error("error loading bookings", error, stacktrace);
       snackbar(
@@ -66,10 +62,6 @@ class GlobalData {
   static final ValueNotifier<BookingTime> currentBookingTime =
       ValueNotifier(BookingTime.afternoon);
 
-  set bookingTime(BookingTime newBookingTime) =>
-      currentBookingTime.value = newBookingTime;
-
-  final BookingTime bookingTime;
   final ValueNotifier<List<Booking>> _bookings;
   final ValueNotifier<Booking?> _activeBooking;
 

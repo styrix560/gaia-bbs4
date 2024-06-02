@@ -10,6 +10,7 @@ import "widgets/bookings_view.dart";
 import "widgets/overview.dart";
 
 final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<bool> appInitialization() async {
   await initSupernova(
@@ -29,6 +30,7 @@ Future<void> main() async {
 
   runApp(MaterialApp(
     scaffoldMessengerKey: scaffoldKey,
+    navigatorKey: navigatorKey,
     home: configFound ? const MainApp() : const ConfigMissingApp(),
   ));
 }
