@@ -156,4 +156,14 @@ class GlobalData {
     });
     return keysToBookings.values.toList();
   }
+
+  void deleteActiveBooking() {
+    if (isTransactionInProgress.value) {
+      snackbar("Bitte warten bis die Transaktion abgeschlossen ist.");
+      return;
+    }
+    logger.debug("delete active booking with id "
+        "${_activeBooking.value?.id}");
+    _activeBooking.value = null;
+  }
 }

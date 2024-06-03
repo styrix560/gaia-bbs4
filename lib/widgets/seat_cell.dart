@@ -117,28 +117,24 @@ class SeatCellWidget extends HookWidget {
       return;
     }
 
-    if (clickedBookings.length == 1) {
-      final newBooking = clickedBookings.first;
-      globalData.changeActiveBooking(newBooking);
-      return;
-    }
-
     if (!globalData.isBookingActive) {
+      if (clickedBookings.length == 1) {
+        final newBooking = clickedBookings.first;
+        globalData.changeActiveBooking(newBooking);
+        return;
+      }
       globalData.initializeActiveBooking(seat);
-      return;
     }
 
     // make a copy to avoid changing the reference in activeBooking
     final newSeats = Set.of(activeBooking!.seats);
     if (newSeats.contains(seat)) {
-      newSeats.remove(seat);
+      if (newSeats.length > 1) {
+        newSeats.remove(seat);
+      }
     } else {
       newSeats.add(seat);
     }
-    if (newSeats.isNotEmpty) {
-      globalData.updateActiveBooking(seats: newSeats);
-    } else {
-      globalData.changeActiveBooking(null);
-    }
+    globalData.updateActiveBooking(seats: newSeats);
   }
 }

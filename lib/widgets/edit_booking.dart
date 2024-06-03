@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
+import "../main.dart";
 import "../types/global_data.dart";
 import "../types/price_type.dart";
 import "../utils.dart";
@@ -184,6 +185,17 @@ class EditBookingWidget extends HookWidget {
             child: Column(
               children: [
                 const Text("Buchung ändern", style: TextStyle(fontSize: 20)),
+                Row(
+                  children: [
+                    Spacer(),
+                    FilledButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                WidgetStatePropertyAll(Colors.red.shade600)),
+                        onPressed: () => deleteBookingDialog(context),
+                        child: Text("Buchung löschen")),
+                  ],
+                ),
                 buildForm(),
               ],
             ),
@@ -191,5 +203,27 @@ class EditBookingWidget extends HookWidget {
         ),
       ],
     );
+  }
+}
+
+Future<void> deleteBookingDialog(BuildContext context) async {
+  final globalData = GlobalData();
+  final answer = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Buchung löschen"),
+      content: Text("Diese Aktion ist unwiderruflich. Fortfahren?"),
+      actions: [
+        FilledButton(
+            onPressed: () => navigatorKey.currentState!.pop(true),
+            child: Text("Ja")),
+        FilledButton(
+            onPressed: () => navigatorKey.currentState!.pop(false),
+            child: Text("Nein")),
+      ],
+    ),
+  );
+  if (answer ?? false) {
+    globalData.deleteActiveBooking();
   }
 }
