@@ -22,13 +22,35 @@ class PaidPriceWidget extends HookWidget {
     final controller =
         useTextEditingController(text: pricePaid.value.toString());
 
-    useEffect(() {
-      void pricePaidListener() {
-        globalData.updateActiveBooking(pricePaid: pricePaid.value);
-        controller.text = pricePaid.value.toString();
-      }
+    useEffect(
+      () {
+        void pricePaidListener() {
+          final globalData = GlobalData();
+          globalData.updateActiveBooking(pricePaid: pricePaid.value);
+          controller.text = pricePaid.value.toString();
+        }
 
+        void controllerListener() {
+          if (!controller.text.isInt) return;
+          final newValue = controller.text.toInt();
+          if (newValue < 0) return;
+          pricePaid.value = newValue;
+        }
+
+        pricePaid.addListener(pricePaidListener);
+        controller.addListener(controllerListener);
+        return () {
+          pricePaid.removeListener(pricePaidListener);
+          controller.addListener(controllerListener);
+        };
+      },
+      [],
+    );
+
+    useEffect(() {
       void globalDataListener() {
+        final globalData = GlobalData();
+        final activeBooking = globalData.activeBooking.value;
         if (!globalData.isBookingActive) return;
         if (activeBooking!.pricePaid != pricePaid.value) {
           pricePaid.value = activeBooking.pricePaid;
@@ -38,22 +60,10 @@ class PaidPriceWidget extends HookWidget {
         }
       }
 
-      void controllerListener() {
-        if (!controller.text.isInt) return;
-        final newValue = controller.text.toInt();
-        if (newValue < 0) return;
-        pricePaid.value = newValue;
-      }
-
-      pricePaid.addListener(pricePaidListener);
       globalData.activeBooking.addListener(globalDataListener);
-      controller.addListener(controllerListener);
-      return () {
-        globalData.activeBooking.removeListener(globalDataListener);
-        pricePaid.removeListener(pricePaidListener);
-        controller.removeListener(controllerListener);
-      };
-    });
+      return () => globalData.activeBooking.removeListener(globalDataListener);
+    }, [GlobalData.currentBookingTime.value]);
+    useListenable(GlobalData.currentBookingTime);
 
     void decrementPrice() {
       if (pricePaid.value <= 0) return;
