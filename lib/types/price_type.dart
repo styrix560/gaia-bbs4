@@ -11,7 +11,7 @@ enum PriceType {
 }
 
 extension PriceTypeExte on PriceType {
-  int calculatePrice(BookingTime bookingTime) {
+  int calculatePricePerSeat(BookingTime bookingTime) {
     if (this == PriceType.free) return 0;
     switch (bookingTime) {
       case BookingTime.afternoon:

@@ -38,7 +38,7 @@ class Booking {
       );
 
   int getPrice({required BookingTime bookingTime}) =>
-      priceType.calculatePrice(bookingTime) * seats.length;
+      priceType.calculatePricePerSeat(bookingTime) * seats.length;
 
   List<Seat> getSeatsSorted() => IterableExtension(seats).sorted(
         (a, b) {

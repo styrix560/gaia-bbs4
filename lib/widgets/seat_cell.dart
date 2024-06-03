@@ -44,7 +44,7 @@ class SeatCellWidget extends HookWidget {
       Color getColorForBooking(
           Booking booking, Color colorIfPaid, Color colorIfNotPaid) {
         final pricePerSeat = booking.priceType
-            .calculatePrice(GlobalData.currentBookingTime.value);
+            .calculatePricePerSeat(GlobalData.currentBookingTime.value);
         final amountOfPaidSeats =
             pricePerSeat == 0 ? 1000 : booking.pricePaid ~/ pricePerSeat;
 

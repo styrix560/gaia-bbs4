@@ -12,7 +12,7 @@ class PaidPriceWidget extends HookWidget {
       .activeBooking
       .value!
       .priceType
-      .calculatePrice(GlobalData.currentBookingTime.value);
+      .calculatePricePerSeat(GlobalData.currentBookingTime.value);
 
   @override
   Widget build(BuildContext context) {

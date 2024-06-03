@@ -108,11 +108,27 @@ class EditBookingWidget extends HookWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    "Sitze bestellt: ${numberOfSeat.value}",
-                    style: const TextStyle(
-                      fontSize: 18,
-                    ),
+                  Column(
+                    children: [
+                      Text(
+                        "Sitze bestellt: ${numberOfSeat.value}",
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        "Gesamtpreis: ${numberOfSeat.value * priceType.value.calculatePricePerSeat(GlobalData.currentBookingTime.value)}€",
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        "Zu bezahlen: ${numberOfSeat.value * priceType.value.calculatePricePerSeat(GlobalData.currentBookingTime.value) - activeBooking!.pricePaid}€",
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
                   ),
                   const VerticalDivider(
                     width: 32,
@@ -135,7 +151,7 @@ class EditBookingWidget extends HookWidget {
                           ),
                           space(width: 16),
                           Text(
-                            "${priceType.value.calculatePrice(
+                            "${priceType.value.calculatePricePerSeat(
                               bookingTime.value,
                             )}€ pro Sitz",
                             style: const TextStyle(
