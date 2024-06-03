@@ -6,6 +6,7 @@ import "package:flutter_hooks/flutter_hooks.dart";
 import "package:supernova/supernova.dart";
 
 import "api/sheets_api.dart";
+import "types/seat_layout.dart";
 import "widgets/bookings_view.dart";
 import "widgets/overview.dart";
 
@@ -17,6 +18,10 @@ Future<bool> appInitialization() async {
     shouldInitializeTimeMachine: false,
     minLogLevel: kDebugMode ? LogLevel.trace : LogLevel.config,
   );
+
+  assert(seatLayout['Parkett']!.sum == 555);
+  assert(seatLayout['Sparkassenrang']!.sum == 133);
+  assert(maxRowLength == 28);
 
   return Config.loadConfig("assets/config.json");
 }

@@ -71,7 +71,7 @@ class SheetsApi extends Api {
         booking.lastName,
         booking.firstName,
         booking.className,
-        booking.seats.join(";"),
+        booking.seats.map((seat) => seat.toDatabaseString()).join(";"),
         booking.pricePaid.toString(),
         booking.priceType.name,
         booking.comments,

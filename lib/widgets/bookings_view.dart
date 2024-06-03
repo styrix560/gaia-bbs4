@@ -1,12 +1,10 @@
-import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
-import "package:supernova/supernova.dart";
 
 import "../types/booking_time.dart";
 import "../types/global_data.dart";
-import "../types/grid_definition.dart";
 import "../types/seat.dart";
+import "../types/seat_layout.dart";
 import "../utils.dart";
 import "custom_menu_button.dart";
 import "edit_booking.dart";
@@ -15,13 +13,15 @@ import "seat_cell.dart";
 class BookingsView extends HookWidget {
   const BookingsView({super.key});
 
-  Map<Seat, SeatCellWidget> initSeatCells(BookingTime bookingTime) {
+  Map<Seat, SeatCellWidget> initSeatCells() {
     final seatCells = <Seat, SeatCellWidget>{};
 
-    for (final (y, width) in rowWidths.indexed) {
-      for (var x = 0; x < width; x++) {
-        final seat = Seat(y, x);
-        seatCells[seat] = SeatCellWidget(x, y);
+    for (final entry in seatLayout.entries) {
+      for (final (y, width) in entry.value.indexed) {
+        for (var x = 0; x < width; x++) {
+          final seat = Seat(y, x, entry.key);
+          seatCells[seat] = SeatCellWidget(seat);
+        }
       }
     }
 
@@ -32,7 +32,7 @@ class BookingsView extends HookWidget {
   Widget build(BuildContext context) {
     final globalData = GlobalData();
     final bookingTime = GlobalData.currentBookingTime.value;
-    final seatCells = useMemoized(() => initSeatCells(bookingTime), [
+    final seatCells = useMemoized(initSeatCells, [
       bookingTime,
     ]);
     useListenableSelector(
@@ -41,8 +41,6 @@ class BookingsView extends HookWidget {
     );
     useListenable(GlobalData.currentBookingTime);
     useListenable(globalData.isTransactionInProgress);
-
-    final maxRowLength = rowWidths.max;
 
     final transactionsDisabled =
         globalData.isBookingActive || globalData.isTransactionInProgress.value;
@@ -97,13 +95,22 @@ class BookingsView extends HookWidget {
           ],
         ),
         space(height: 16),
-        for (final (y, width) in rowWidths.indexed)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+        for (final entry in seatLayout.entries)
+          Column(
             children: [
-              if (width < maxRowLength) Spacer(flex: maxRowLength - width),
-              for (var x = 0; x < width; x++) seatCells[Seat(y, x)]!,
-              if (width < maxRowLength) Spacer(flex: maxRowLength - width),
+              Text(entry.key),
+              for (final (y, width) in entry.value.indexed)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (width < maxRowLength)
+                      Spacer(flex: maxRowLength - width),
+                    for (var x = 0; x < width; x++)
+                      seatCells[Seat(y, x, entry.key)]!,
+                    if (width < maxRowLength)
+                      Spacer(flex: maxRowLength - width),
+                  ],
+                ),
             ],
           ),
         const EditBookingWidget(),

@@ -9,17 +9,14 @@ import "seat_disambiguation.dart";
 
 class SeatCellWidget extends HookWidget {
   const SeatCellWidget(
-    this.x,
-    this.y, {
+    this.seat, {
     super.key,
   });
 
-  final int x;
-  final int y;
+  final Seat seat;
 
   @override
   Widget build(BuildContext context) {
-    final seat = Seat(y, x);
     final globalData = GlobalData();
     final activeBooking = globalData.activeBooking.value;
     // final rebuild = useRebuild();
