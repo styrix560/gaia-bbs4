@@ -124,6 +124,7 @@ class SeatCellWidget extends HookWidget {
         return;
       }
       globalData.initializeActiveBooking(seat);
+      return;
     }
 
     // make a copy to avoid changing the reference in activeBooking

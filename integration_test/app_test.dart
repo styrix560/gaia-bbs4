@@ -72,7 +72,7 @@ Future<void> main() async {
         "lastname",
         "classname",
         {
-          Seat(0, 1),
+          Seat(0, 1, "Parkett"),
         },
         0,
         PriceType.normal,
@@ -149,7 +149,7 @@ Future<void> main() async {
         "Mustermann",
         "Musterklasse",
         {
-          const Seat(0, 1),
+          const Seat(0, 1, "Parkett"),
         },
         0,
         PriceType.normal,
@@ -166,9 +166,9 @@ Future<void> wait([int seconds = 5]) async {
 Future<void> clickSeat(WidgetTester tester, String seatText) async {
   print("finding seat");
   final seat = find.text(seatText);
-  expect(seat, findsOne);
+  expect(seat, findsAtLeastNWidgets(1));
 
   print("tapping seat");
-  await tester.tap(seat);
+  await tester.tap(seat.first);
   await tester.pumpAndSettle();
 }
