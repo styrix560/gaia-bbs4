@@ -27,15 +27,15 @@ class OverviewWidget extends HookWidget {
         return a.row.compareTo(b.row);
       },
     );
-    var formattedSeats = "";
+    final formattedSeats = StringBuffer();
     while (true) {
       final nextSeats = seatList.take(5);
       seatList.removeRange(0, min(5, seatList.length));
-      formattedSeats += nextSeats.join(" / ");
+      formattedSeats.write(nextSeats.join(" / "));
       if (seatList.isEmpty) break;
-      formattedSeats += "\n";
+      formattedSeats.write("\n");
     }
-    return formattedSeats;
+    return formattedSeats.toString();
   }
 
   @override
