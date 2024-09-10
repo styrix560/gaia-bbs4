@@ -20,7 +20,7 @@ Future<bool> appInitialization() async {
   );
 
   assert(seatLayout['Parkett']!.sum == 555);
-  assert(seatLayout['Sparkassenrang']!.sum == 133);
+  assert(seatLayout['Sparkassen Rang']!.sum == 133);
   assert(maxRowLength == 28);
 
   return Config.loadConfig("assets/config.json");

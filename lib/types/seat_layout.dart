@@ -9,7 +9,7 @@ class Rectangle {
 
 final Map<String, List<int>> seatLayout = {
   "Parkett": [for (var i = 0; i < 19; i++) 28, 23],
-  "Sparkassenrang": [
+  "Sparkassen Rang": [
     for (var i = 0; i < 5; i++) 23,
     18,
   ],

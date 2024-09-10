@@ -26,15 +26,25 @@ class Booking {
   final PriceType priceType;
   final String comments;
 
-  Booking copy() => Booking(
-        id,
-        firstName,
-        lastName,
-        className,
-        Set.of(seats),
-        pricePaid,
-        priceType,
-        comments,
+  Booking copy({
+    String? id,
+    String? firstName,
+    String? lastName,
+    String? className,
+    Set<Seat>? seats,
+    int? pricePaid,
+    PriceType? priceType,
+    String? comments,
+  }) =>
+      Booking(
+        id ?? this.id,
+        firstName ?? this.firstName,
+        lastName ?? this.lastName,
+        className ?? this.className,
+        seats ?? Set.of(this.seats),
+        pricePaid ?? this.pricePaid,
+        priceType ?? this.priceType,
+        comments ?? this.comments,
       );
 
   int getPrice({required BookingTime bookingTime}) =>
@@ -48,6 +58,18 @@ class Booking {
           return a.row.compareTo(b.row);
         },
       );
+
+  Map<String, List<Seat>> getSeatsByGroup() {
+    final groups = <String, List<Seat>>{};
+    for (final seat in seats) {
+      if (groups.containsKey(seat.groupName)) {
+        groups[seat.groupName]!.add(seat);
+      } else {
+        groups[seat.groupName] = [seat];
+      }
+    }
+    return groups;
+  }
 
   bool matches(String query) =>
       firstName.toLowerCase().contains(query.toLowerCase()) ||

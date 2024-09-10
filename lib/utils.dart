@@ -6,6 +6,9 @@ import "main.dart";
 extension BuildExt on BuildContext {
   Future<void> gotoNoback(Widget widget) async => Navigator.of(this)
       .pushReplacement(MaterialPageRoute<void>(builder: (_) => widget));
+
+  Future<void> goto(Widget widget) async =>
+      Navigator.of(this).push(MaterialPageRoute<void>(builder: (_) => widget));
 }
 
 void snackbar([String msg = "Dieses Feature funktioniert noch nicht ganz."]) =>
