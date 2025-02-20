@@ -60,20 +60,6 @@ class BookingsView extends HookWidget {
               disabled: transactionsDisabled,
             ),
             const Spacer(),
-            // FilledButton(
-            //   onPressed: () async {
-            //     final Booking? booking = await showDialog(
-            //       context: context,
-            //       builder: (context) => SeatDisambiguationWidget([
-            //         Booking("id1", "Max", "Mustermann", "Musterklasse", {}, 0,
-            //             PriceType.reduced, ""),
-            //         Booking("id2", "Klaus", "Kinski", "sehr sauer", {}, 0,
-            //             PriceType.reduced, ""),
-            //       ]),
-            //     );
-            //   },
-            //   child: const Text("test"),
-            // ),
             FilledButton(
               onPressed: transactionsDisabled ? null : globalData.loadBookings,
               child: const Text("Buchungen zurücksetzen"),
