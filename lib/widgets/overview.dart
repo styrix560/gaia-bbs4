@@ -65,15 +65,16 @@ class OverviewWidget extends HookWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
+            padding: const EdgeInsets.only(bottom: 8),
             child: Row(
               children: [
-                Spacer(),
+                const Spacer(),
                 OutlinedButton(
-                    onPressed: globalData.isTransactionInProgress.value
-                        ? null
-                        : () => printOverview(searchQuery.text),
-                    child: Text("Drucken")),
+                  onPressed: globalData.isTransactionInProgress.value
+                      ? null
+                      : () => printOverview(searchQuery.text),
+                  child: Text("Drucken"),
+                ),
               ],
             ),
           ),
@@ -116,8 +117,7 @@ class OverviewWidget extends HookWidget {
               for (final booking in getFilteredBookings(searchQuery.text))
                 TableRow(
                   children: [
-                    Text(booking.lastName),
-                    Text(booking.firstName),
+                    Text(booking.name),
                     Text(booking.className),
                     Text(
                       booking.seats.join("\n"),
@@ -193,14 +193,14 @@ class OverviewWidget extends HookWidget {
     }
     Logger().log(LogLevel.info, "Filtering and Paging of Bookings");
     final bookings = getFilteredBookings(query);
-    for (var i = 0; i < 10; i++) {
-      bookings.add(bookings.last);
-    }
-    final seats = Set.of(bookings.last.seats);
-    for (var i = 0; i < 100; i++) {
-      seats.add(Seat(5, i + 5, "Parkett"));
-    }
-    bookings.add(bookings.last.copy(seats: seats));
+    // for (var i = 0; i < 10; i++) {
+    //   bookings.add(bookings.last);
+    // }
+    // final seats = Set.of(bookings.last.seats);
+    // for (var i = 0; i < 100; i++) {
+    //   seats.add(Seat(5, i + 5, "Parkett"));
+    // }
+    // bookings.add(bookings.last.copy(seats: seats));
     Logger().log(LogLevel.info, "Generating pdf");
     final pdf = await _generatePdf(PdfPageFormat.a4, bookings);
     Logger().log(LogLevel.info, "Beginning Printing");
@@ -238,8 +238,7 @@ class OverviewWidget extends HookWidget {
               children: [
                 pw.TableRow(
                   children: [
-                    "Vorname",
-                    "Nachname",
+                    "Name",
                     "Klasse",
                     "Preisart",
                     "Kommentare",
@@ -257,8 +256,7 @@ class OverviewWidget extends HookWidget {
                 for (final booking in bookings)
                   pw.TableRow(
                     children: ([
-                          booking.firstName,
-                          booking.lastName,
+                          booking.name,
                           booking.className,
                           booking.priceType.germanName,
                           booking.comments,
@@ -274,15 +272,17 @@ class OverviewWidget extends HookWidget {
                             .toList()) +
                         [
                           pw.Padding(
-                            padding: pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(2),
                             child: pw.Column(children: [
                               for (final entry
                                   in booking.getSeatsByGroup().entries)
                                 pw.Column(children: [
                                   pw.Text(entry.key, style: mediumStyle),
                                   for (final seat in entry.value)
-                                    pw.Text(seat.toString(),
-                                        style: regularStyle),
+                                    pw.Text(
+                                      seat.toString(),
+                                      style: regularStyle,
+                                    ),
                                 ]),
                             ]),
                           ),

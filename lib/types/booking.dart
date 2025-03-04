@@ -8,8 +8,7 @@ import "seat.dart";
 class Booking {
   const Booking(
     this.id,
-    this.firstName,
-    this.lastName,
+    this.name,
     this.className,
     this.seats,
     this.pricePaid,
@@ -18,8 +17,7 @@ class Booking {
   );
 
   final String id;
-  final String firstName;
-  final String lastName;
+  final String name;
   final String className;
   final Set<Seat> seats;
   final int pricePaid;
@@ -28,8 +26,7 @@ class Booking {
 
   Booking copy({
     String? id,
-    String? firstName,
-    String? lastName,
+    String? name,
     String? className,
     Set<Seat>? seats,
     int? pricePaid,
@@ -38,8 +35,7 @@ class Booking {
   }) =>
       Booking(
         id ?? this.id,
-        firstName ?? this.firstName,
-        lastName ?? this.lastName,
+        name ?? this.name,
         className ?? this.className,
         seats ?? Set.of(this.seats),
         pricePaid ?? this.pricePaid,
@@ -72,8 +68,7 @@ class Booking {
   }
 
   bool matches(String query) =>
-      firstName.toLowerCase().contains(query.toLowerCase()) ||
-      lastName.toLowerCase().contains(query.toLowerCase()) ||
+      name.toLowerCase().contains(query.toLowerCase()) ||
       className.toLowerCase().contains(query.toLowerCase());
 
   @override
@@ -82,8 +77,7 @@ class Booking {
         other is Booking &&
             runtimeType == other.runtimeType &&
             id == other.id &&
-            firstName == other.firstName &&
-            lastName == other.lastName &&
+            name == other.name &&
             className == other.className &&
             const SetEquality<Seat>().equals(seats, other.seats) &&
             pricePaid == other.pricePaid &&
@@ -94,8 +88,7 @@ class Booking {
   @override
   int get hashCode =>
       id.hashCode ^
-      firstName.hashCode ^
-      lastName.hashCode ^
+      name.hashCode ^
       className.hashCode ^
       seats.hashCode ^
       pricePaid.hashCode ^
@@ -104,7 +97,7 @@ class Booking {
 
   @override
   String toString() {
-    return "Booking($id, $lastName, $firstName, (${seats.join(" / ")}), "
+    return "Booking($id, $name, (${seats.join(" / ")}), "
         "$pricePaid, $priceType, $comments)";
   }
 }

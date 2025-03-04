@@ -34,11 +34,13 @@ class StatisticsWidget extends HookWidget {
             .sum,
     };
     final seatsPerGrade = <int?, int>{};
-    bookings.map(getGradeFromBooking).forEach((e) {
-      if (seatsPerGrade.containsKey(e)) {
-        seatsPerGrade[e] = seatsPerGrade[e]! + 1;
+    bookings
+        .map((it) => (count: it.seats.length, grade: getGradeFromBooking(it)))
+        .forEach((e) {
+      if (seatsPerGrade.containsKey(e.grade)) {
+        seatsPerGrade[e.grade] = seatsPerGrade[e.grade]! + e.count;
       } else {
-        seatsPerGrade[e] = 1;
+        seatsPerGrade[e.grade] = e.count;
       }
     });
 
@@ -69,7 +71,7 @@ class StatisticsWidget extends HookWidget {
               // ),
               Column(
                 children: [
-                  Text("Sitze verkauft: $seatsSoldTotal"),
+                  Text("Sitze gebucht: $seatsSoldTotal"),
                   SizedBox(
                     width: 400,
                     height: 400,
@@ -129,7 +131,11 @@ class StatisticsWidget extends HookWidget {
                         PieChartSectionData(
                           title: "${entry.value}",
                           value: entry.value.toDouble(),
-                          badgeWidget: Text("KS " + (entry.key ?? "nicht zugeordnet").toString()),
+                          badgeWidget: Text(
+                            entry.key == null
+                                ? "nicht zugeordnet"
+                                : "KS ${entry.key}",
+                          ),
                           badgePositionPercentageOffset: 1.3,
                           radius: 80,
                           color: getColourForGrade(entry.key),

@@ -19,30 +19,17 @@ class SeatCellWidget extends HookWidget {
   Widget build(BuildContext context) {
     final globalData = GlobalData();
     final activeBooking = globalData.activeBooking.value;
-    // final rebuild = useRebuild();
-    // final previousBooking = useRef<Booking?>(null);
     useListenable(globalData.activeBooking);
     useListenable(globalData.bookings);
 
-    // bool shouldRebuild() {
-    //   final prevBooking = previousBooking.value?.copy();
-    //   previousBooking.value = activeBooking?.copy();
-    //
-    //   bool isActive(Booking? booking) => booking?.seats.contains(seat) ?? false;
-    //   final isActiveNow = isActive(activeBooking);
-    //   final wasActiveBefore = isActive(prevBooking);
-    //   if (isActiveNow != wasActiveBefore) return true;
-    //   if (!isActiveNow) return false;
-    //
-    //   return activeBooking!.seats.length != prevBooking!.seats.length ||
-    //       activeBooking.lastName != prevBooking.lastName ||
-    //       activeBooking.pricePaid != prevBooking.pricePaid ||
-    //       activeBooking.priceType != prevBooking.priceType;
-    // }
+    final isSeatActive = activeBooking?.seats.contains(seat) ?? false;
 
     Color getColor() {
       Color getColorForBooking(
-          Booking booking, Color colorIfPaid, Color colorIfNotPaid) {
+        Booking booking,
+        Color colorIfPaid,
+        Color colorIfNotPaid,
+      ) {
         final pricePerSeat = booking.priceType
             .calculatePricePerSeat(GlobalData.currentBookingTime.value);
         final amountOfPaidSeats =
@@ -53,7 +40,7 @@ class SeatCellWidget extends HookWidget {
             : colorIfNotPaid;
       }
 
-      if (activeBooking?.seats.contains(seat) ?? false) {
+      if (isSeatActive) {
         return getColorForBooking(
           activeBooking!,
           Colors.blue.shade800,
@@ -74,20 +61,20 @@ class SeatCellWidget extends HookWidget {
     }
 
     String getText() {
-      if (activeBooking?.seats.contains(seat) ?? false) {
-        return activeBooking!.lastName;
+      if (isSeatActive) {
+        return activeBooking!.name;
       }
       final bookings = globalData.getBookingsContainingSeat(seat);
       return bookings.isEmpty
           ? seat.toString()
-          : bookings.map((e) => e.lastName).join("/");
+          : bookings.map((e) => e.name).join("/");
     }
 
     return Expanded(
       flex: 2,
       child: GestureDetector(
-        onTapDown: (_) {
-          onClick(context, seat);
+        onTap: () async {
+          await onClick(context, seat);
         },
         child: DecoratedBox(
           decoration: BoxDecoration(
@@ -121,9 +108,9 @@ class SeatCellWidget extends HookWidget {
       if (clickedBookings.length == 1) {
         final newBooking = clickedBookings.first;
         globalData.changeActiveBooking(newBooking);
-        return;
+      } else {
+        globalData.initializeActiveBooking(seat);
       }
-      globalData.initializeActiveBooking(seat);
       return;
     }
 
