@@ -1,5 +1,6 @@
 import "package:bbs4/types/config.dart";
 import "package:bbs4/types/global_data.dart";
+import "package:bbs4/widgets/statistics.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
@@ -20,7 +21,7 @@ Future<bool> appInitialization() async {
   );
 
   assert(seatLayout['Parkett']!.sum == 555);
-  assert(seatLayout['Sparkassenrang']!.sum == 133);
+  assert(seatLayout['Sparkassen Rang']!.sum == 133);
   assert(maxRowLength == 28);
 
   return Config.loadConfig("assets/config.json");
@@ -60,7 +61,7 @@ class MainApp extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tabController = useTabController(initialLength: 2);
+    final tabController = useTabController(initialLength: 3);
 
     return Scaffold(
       appBar: AppBar(
@@ -71,6 +72,7 @@ class MainApp extends HookWidget {
         bottom: TabBar(controller: tabController, tabs: const [
           Tab(text: "Buchungen"),
           Tab(text: "Überblick"),
+          Tab(text: "Statistiken"),
         ]),
       ),
       body: Padding(
@@ -81,6 +83,7 @@ class MainApp extends HookWidget {
             child: BookingsView(),
           ),
           OverviewWidget(tabController),
+          StatisticsWidget(),
         ]),
       ),
     );

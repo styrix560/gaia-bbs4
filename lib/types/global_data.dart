@@ -33,7 +33,9 @@ class GlobalData {
     isTransactionInProgress.value = true;
     try {
       await api.writeBookings(
-          currentBookingTime.value.germanName, bookings.value);
+        currentBookingTime.value.germanName,
+        bookings.value,
+      );
     } on Exception catch (error, stacktrace) {
       logger.error("error pushing changes to db", error, stacktrace);
       snackbar("Fehler beim Schreiben der Buchungen");
@@ -79,8 +81,7 @@ class GlobalData {
   bool get isBookingActive => _activeBooking.value != null;
 
   void updateActiveBooking({
-    String? firstName,
-    String? lastName,
+    String? name,
     String? className,
     Set<Seat>? seats,
     int? pricePaid,
@@ -89,8 +90,7 @@ class GlobalData {
   }) {
     final newBooking = Booking(
       _activeBooking.value!.id,
-      firstName ?? activeBooking.value!.firstName,
-      lastName ?? activeBooking.value!.lastName,
+      name ?? activeBooking.value!.name,
       className ?? activeBooking.value!.className,
       seats ?? activeBooking.value!.seats,
       pricePaid ?? activeBooking.value!.pricePaid,
@@ -134,7 +134,7 @@ class GlobalData {
     assert(activeBooking.value == null);
     logger.debug("initialize active booking");
     _activeBooking.value =
-        Booking(uuid.v4(), "", "", "", {firstSeat}, 0, PriceType.normal, "");
+        Booking(uuid.v4(), "", "", {firstSeat}, 0, PriceType.normal, "");
   }
 
   /// Merges two Lists of [Booking]s together. [preferExternal] signifies,

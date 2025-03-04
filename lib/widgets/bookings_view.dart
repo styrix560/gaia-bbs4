@@ -13,28 +13,11 @@ import "seat_cell.dart";
 class BookingsView extends HookWidget {
   const BookingsView({super.key});
 
-  Map<Seat, SeatCellWidget> initSeatCells() {
-    final seatCells = <Seat, SeatCellWidget>{};
-
-    for (final entry in seatLayout.entries) {
-      for (final (y, width) in entry.value.indexed) {
-        for (var x = 0; x < width; x++) {
-          final seat = Seat(y, x, entry.key);
-          seatCells[seat] = SeatCellWidget(seat);
-        }
-      }
-    }
-
-    return seatCells;
-  }
-
   @override
   Widget build(BuildContext context) {
     final globalData = GlobalData();
     final bookingTime = GlobalData.currentBookingTime.value;
-    final seatCells = useMemoized(initSeatCells, [
-      bookingTime,
-    ]);
+
     useListenableSelector(
       globalData.activeBooking,
       () => globalData.isBookingActive,
@@ -60,20 +43,6 @@ class BookingsView extends HookWidget {
               disabled: transactionsDisabled,
             ),
             const Spacer(),
-            // FilledButton(
-            //   onPressed: () async {
-            //     final Booking? booking = await showDialog(
-            //       context: context,
-            //       builder: (context) => SeatDisambiguationWidget([
-            //         Booking("id1", "Max", "Mustermann", "Musterklasse", {}, 0,
-            //             PriceType.reduced, ""),
-            //         Booking("id2", "Klaus", "Kinski", "sehr sauer", {}, 0,
-            //             PriceType.reduced, ""),
-            //       ]),
-            //     );
-            //   },
-            //   child: const Text("test"),
-            // ),
             FilledButton(
               onPressed: transactionsDisabled ? null : globalData.loadBookings,
               child: const Text("Buchungen zurücksetzen"),
@@ -105,15 +74,15 @@ class BookingsView extends HookWidget {
                   children: [
                     if (width < maxRowLength)
                       Spacer(flex: maxRowLength - width),
-                    for (var x = 0; x < width; x++)
-                      seatCells[Seat(y, x, entry.key)]!,
+                    for (var x = width - 1; x >= 0; x--)
+                      SeatCellWidget(Seat(y, x, entry.key)),
                     if (width < maxRowLength)
                       Spacer(flex: maxRowLength - width),
                   ],
                 ),
             ],
           ),
-        const EditBookingWidget(),
+        if (globalData.isBookingActive) const EditBookingWidget(),
       ],
     );
   }

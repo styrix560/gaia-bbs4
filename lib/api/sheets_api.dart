@@ -11,6 +11,7 @@ import "api.dart";
 class SheetsApi extends Api {
   static final _gsheets = GSheets(Config.getApiSecret());
 
+  @override
   Future<List<Booking>> getBookings(String sheetName) async {
     logger.info("getting Bookings from api");
 
@@ -26,8 +27,8 @@ class SheetsApi extends Api {
     final bookings = <Booking>[];
 
     for (final row in rows) {
-      final iv = IV.fromBase64(row[8].value.replaceAll('"', ""));
-      final values = row.getRange(0, 8).map(
+      final iv = IV.fromBase64(row[7].value.replaceAll('"', ""));
+      final values = row.getRange(0, 7).map(
         (cell) {
           final cellValue = cell.value.replaceAll('"', "");
           logger.debug("cellValue", (cell.value, cellValue));
@@ -38,13 +39,12 @@ class SheetsApi extends Api {
       logger.debug("values", values);
       final newBooking = Booking(
         values[0],
-        values[2],
         values[1],
-        values[3],
-        values[4].split(";").map(Seat.fromString).toSet(),
-        values[5].toInt(),
-        PriceType.values.byName(values[6]),
-        values.length == 8 ? values[7] : "",
+        values[2],
+        values[3].split(";").map(Seat.fromString).toSet(),
+        values[4].toInt(),
+        PriceType.values.byName(values[5]),
+        values.length == 8 ? values[6] : "",
       );
       bookings.add(newBooking);
     }
@@ -68,8 +68,7 @@ class SheetsApi extends Api {
 
       final row = <String>[
         booking.id,
-        booking.lastName,
-        booking.firstName,
+        booking.name,
         booking.className,
         booking.seats.map((seat) => seat.toDatabaseString()).join(";"),
         booking.pricePaid.toString(),

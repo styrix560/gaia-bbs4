@@ -15,23 +15,24 @@ class SeatDisambiguationWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Zu diesem Sitz gehören mehr als eine Buchung."),
+      title: const Text("Zu diesem Sitz gehören mehr als eine Buchung."),
       content: SingleChildScrollView(
         child: Column(
           children: [
-            Text("Bitte die zu bearbeitende Buchung auswählen:"),
+            const Text("Bitte die zu bearbeitende Buchung auswählen:"),
             for (final booking in bookings)
               Row(
                 children: [
-                  Text("${booking.lastName}, ${booking.firstName}"),
-                  Spacer(),
+                  Text(booking.name),
+                  const Spacer(),
                   IconButton(
-                      onPressed: () {
-                        navigatorKey.currentState!.pop(booking);
-                      },
-                      icon: Icon(Icons.edit)),
+                    onPressed: () {
+                      navigatorKey.currentState!.pop(booking);
+                    },
+                    icon: const Icon(Icons.edit),
+                  ),
                 ],
-              )
+              ),
           ],
         ),
       ),

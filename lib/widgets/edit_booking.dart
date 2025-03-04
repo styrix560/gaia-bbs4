@@ -14,18 +14,16 @@ class EditBookingWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final formKey = useMemoized(GlobalKey<FormState>.new);
-    final rebuild = useRebuild();
     final globalData = GlobalData();
-    final activeBooking = globalData.activeBooking.value;
+    final activeBooking = globalData.activeBooking.value!;
     final bookingTime = GlobalData.currentBookingTime;
 
-    final numberOfSeat = useState(activeBooking?.seats.length ?? 0);
-    final priceType = useState(activeBooking?.priceType ?? PriceType.normal);
+    final numberOfSeat = activeBooking.seats.length;
+    final priceType = useState(activeBooking.priceType);
 
-    final lastName = useTextEditingController();
-    final firstName = useTextEditingController();
-    final className = useTextEditingController();
-    final comments = useTextEditingController();
+    final name = useTextEditingController(text: activeBooking.name);
+    final className = useTextEditingController(text: activeBooking.className);
+    final comments = useTextEditingController(text: activeBooking.comments);
 
     void onPriceTypeChanged(PriceType? value) {
       if (value == null || value == priceType.value) return;
@@ -34,27 +32,6 @@ class EditBookingWidget extends HookWidget {
       );
       priceType.value = value;
     }
-
-    void updateState() {
-      final activeBooking = globalData.activeBooking.value;
-      firstName.text = activeBooking?.firstName ?? firstName.text;
-      lastName.text = activeBooking?.lastName ?? lastName.text;
-      className.text = activeBooking?.className ?? className.text;
-      comments.text = activeBooking?.comments ?? comments.text;
-      numberOfSeat.value = activeBooking?.seats.length ?? 0;
-      priceType.value = activeBooking?.priceType ?? PriceType.normal;
-    }
-
-    useEffect(() {
-      void listenable() {
-        updateState();
-        rebuild();
-      }
-
-      globalData.activeBooking.addListener(listenable);
-      return () => globalData.activeBooking.removeListener(listenable);
-    }, [GlobalData.currentBookingTime.value]);
-    useListenable(GlobalData.currentBookingTime);
 
     Form buildForm() {
       final globalData = GlobalData();
@@ -66,27 +43,14 @@ class EditBookingWidget extends HookWidget {
               children: [
                 space(height: 32),
                 Expanded(
-                  flex: 2,
                   child: Padding(
                     padding: const EdgeInsets.all(8),
                     child: TextFormField(
-                      decoration: const InputDecoration(label: Text("Vorname")),
-                      controller: firstName,
+                      autofocus: true,
+                      decoration: const InputDecoration(label: Text("Name")),
+                      controller: name,
                       onChanged: (value) =>
-                          globalData.updateActiveBooking(firstName: value),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: TextFormField(
-                      decoration:
-                          const InputDecoration(label: Text("Nachname")),
-                      controller: lastName,
-                      onChanged: (value) =>
-                          globalData.updateActiveBooking(lastName: value),
+                          globalData.updateActiveBooking(name: value),
                     ),
                   ),
                 ),
@@ -111,19 +75,19 @@ class EditBookingWidget extends HookWidget {
                   Column(
                     children: [
                       Text(
-                        "Sitze bestellt: ${numberOfSeat.value}",
+                        "Sitze bestellt: ${numberOfSeat}",
                         style: const TextStyle(
                           fontSize: 18,
                         ),
                       ),
                       Text(
-                        "Gesamtpreis: ${numberOfSeat.value * priceType.value.calculatePricePerSeat(GlobalData.currentBookingTime.value)}€",
+                        "Gesamtpreis: ${numberOfSeat * priceType.value.calculatePricePerSeat(GlobalData.currentBookingTime.value)}€",
                         style: const TextStyle(
                           fontSize: 18,
                         ),
                       ),
                       Text(
-                        "Zu bezahlen: ${numberOfSeat.value * priceType.value.calculatePricePerSeat(GlobalData.currentBookingTime.value) - activeBooking!.pricePaid}€",
+                        "Zu bezahlen: ${numberOfSeat * priceType.value.calculatePricePerSeat(GlobalData.currentBookingTime.value) - activeBooking!.pricePaid}€",
                         style: const TextStyle(
                           fontSize: 18,
                         ),
@@ -182,9 +146,6 @@ class EditBookingWidget extends HookWidget {
       );
     }
 
-    if (!globalData.isBookingActive) {
-      return const SizedBox();
-    }
     return Column(
       children: [
         Divider(
@@ -203,13 +164,15 @@ class EditBookingWidget extends HookWidget {
                 const Text("Buchung ändern", style: TextStyle(fontSize: 20)),
                 Row(
                   children: [
-                    Spacer(),
+                    const Spacer(),
                     FilledButton(
-                        style: ButtonStyle(
-                            backgroundColor:
-                                WidgetStatePropertyAll(Colors.red.shade600)),
-                        onPressed: () => deleteBookingDialog(context),
-                        child: Text("Buchung löschen")),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            WidgetStatePropertyAll(Colors.red.shade600),
+                      ),
+                      onPressed: () async => deleteBookingDialog(context),
+                      child: const Text("Buchung löschen"),
+                    ),
                   ],
                 ),
                 buildForm(),
@@ -227,15 +190,17 @@ Future<void> deleteBookingDialog(BuildContext context) async {
   final answer = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text("Buchung löschen"),
-      content: Text("Diese Aktion ist unwiderruflich. Fortfahren?"),
+      title: const Text("Buchung löschen"),
+      content: const Text("Diese Aktion ist unwiderruflich. Fortfahren?"),
       actions: [
         FilledButton(
-            onPressed: () => navigatorKey.currentState!.pop(true),
-            child: Text("Ja")),
+          onPressed: () => navigatorKey.currentState!.pop(true),
+          child: const Text("Ja"),
+        ),
         FilledButton(
-            onPressed: () => navigatorKey.currentState!.pop(false),
-            child: Text("Nein")),
+          onPressed: () => navigatorKey.currentState!.pop(false),
+          child: const Text("Nein"),
+        ),
       ],
     ),
   );
