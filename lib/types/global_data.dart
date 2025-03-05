@@ -27,7 +27,24 @@ class GlobalData {
   }
 
   static final Map<BookingTime, GlobalData> globalDataInstances = {};
+  static final Map<BookingTime, List<Booking>> lastValues = {};
   static late final Api api;
+
+  bool hasChanges() {
+    for (final bookingTime in BookingTime.values) {
+      if (!lastValues.containsKey(bookingTime)) {
+        continue;
+      }
+      logger.debug("here");
+      final current = globalDataInstances[bookingTime]!.bookings.value;
+      final old = lastValues[bookingTime]!;
+      if (current.length != old.length ||
+          current.any((it) => !old.contains(it))) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   Future<void> pushBookings() async {
     isTransactionInProgress.value = true;
@@ -41,6 +58,8 @@ class GlobalData {
       snackbar("Fehler beim Schreiben der Buchungen");
     }
     snackbar("Buchungen erfolgreich geschrieben");
+    lastValues[currentBookingTime.value] = List.of(bookings.value);
+    isDirty = false;
     isTransactionInProgress.value = false;
   }
 
@@ -61,6 +80,8 @@ class GlobalData {
       newBookings,
       preferExternal: true,
     );
+    GlobalData.lastValues[currentBookingTime.value] = List.of(bookings.value);
+    isDirty = false;
     snackbar("Buchungen erfolgreich geladen");
     isTransactionInProgress.value = false;
   }
@@ -70,6 +91,7 @@ class GlobalData {
 
   final ValueNotifier<List<Booking>> _bookings;
   final ValueNotifier<Booking?> _activeBooking;
+  bool isDirty = false;
 
   final isTransactionInProgress = ValueNotifier(false);
   final Uuid uuid = const Uuid();
@@ -103,6 +125,7 @@ class GlobalData {
     logger.debug("updated active booking");
 
     _activeBooking.value = newBooking;
+    isDirty = true;
   }
 
   List<Booking> getBookingsContainingSeat(Seat seat) {
@@ -124,6 +147,7 @@ class GlobalData {
     _bookings.value.remove(newBooking);
     _activeBooking.value = newBooking;
     _bookings.notifyListeners();
+    logger.debug("hasChanges", hasChanges());
   }
 
   void initializeActiveBooking(Seat firstSeat) {
@@ -165,5 +189,6 @@ class GlobalData {
     logger.debug("delete active booking with id "
         "${_activeBooking.value?.id}");
     _activeBooking.value = null;
+    isDirty = true;
   }
 }

@@ -4,10 +4,12 @@ import "package:bbs4/widgets/statistics.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
+import "package:flutter_window_close/flutter_window_close.dart";
 import "package:supernova/supernova.dart";
 
 import "api/sheets_api.dart";
 import "types/seat_layout.dart";
+import "utils.dart";
 import "widgets/bookings_view.dart";
 import "widgets/overview.dart";
 
@@ -63,6 +65,14 @@ class MainApp extends HookWidget {
   Widget build(BuildContext context) {
     final tabController = useTabController(initialLength: 3);
 
+    useEffect(
+      () {
+        FlutterWindowClose.setWindowShouldCloseHandler(() => onClose(context));
+        return null;
+      },
+      [],
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -88,4 +98,45 @@ class MainApp extends HookWidget {
       ),
     );
   }
+}
+
+Future<bool> onClose(BuildContext context) async {
+  final globalData = GlobalData();
+  if (globalData.isTransactionInProgress.value) {
+    snackbar("Bitte warten bis die Transaktion abgeschlossen ist");
+    return false;
+  }
+  if (globalData.isBookingActive) {
+    snackbar("Bitte vor dem Schließen zuerst die aktive Buchung speichern");
+    return false;
+  }
+  final hasChanges = globalData.hasChanges();
+  logger.debug("hasChanges", hasChanges);
+  if (!hasChanges) {
+    return true;
+  }
+  final shouldClose = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text("Achtung"),
+      content: const Text(
+        "Sie sind dabei, dieses Fenster zu schließen. Es liegen"
+        " ungespeicherte Änderungen vor. Wenn Sie fortfahren, "
+        "gehen diese verloren. Fortfahren?",
+      ),
+      actions: [
+        OutlinedButton(
+          onPressed: () => context.pop(true),
+          child: const Text(
+            "Ja",
+          ),
+        ),
+        FilledButton(
+          onPressed: () => context.pop(false),
+          child: const Text("Abbrechen"),
+        ),
+      ],
+    ),
+  );
+  return shouldClose ?? false;
 }

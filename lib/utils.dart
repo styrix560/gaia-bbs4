@@ -9,6 +9,8 @@ extension BuildExt on BuildContext {
 
   Future<void> goto(Widget widget) async =>
       Navigator.of(this).push(MaterialPageRoute<void>(builder: (_) => widget));
+
+  Future<void> pop(dynamic args) async => Navigator.of(this).pop(args);
 }
 
 void snackbar([String msg = "Dieses Feature funktioniert noch nicht ganz."]) =>
