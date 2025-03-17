@@ -1,6 +1,3 @@
-import "package:bbs4/types/config.dart";
-import "package:bbs4/types/global_data.dart";
-import "package:bbs4/widgets/statistics.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
@@ -8,10 +5,13 @@ import "package:flutter_window_close/flutter_window_close.dart";
 import "package:supernova/supernova.dart";
 
 import "api/sheets_api.dart";
+import "types/config.dart";
+import "types/global_data.dart";
 import "types/seat_layout.dart";
 import "utils.dart";
 import "widgets/bookings_view.dart";
 import "widgets/overview.dart";
+import "widgets/statistics.dart";
 
 final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -22,8 +22,8 @@ Future<bool> appInitialization() async {
     minLogLevel: kDebugMode ? LogLevel.trace : LogLevel.config,
   );
 
-  assert(seatLayout['Parkett']!.sum == 555);
-  assert(seatLayout['Sparkassen Rang']!.sum == 133);
+  assert(seatLayout["Parkett"]!.sum == 555);
+  assert(seatLayout["Sparkassen Rang"]!.sum == 133);
   assert(maxRowLength == 28);
 
   return Config.loadConfig("assets/config.json");
@@ -67,7 +67,9 @@ class MainApp extends HookWidget {
 
     useEffect(
       () {
-        FlutterWindowClose.setWindowShouldCloseHandler(() => onClose(context));
+        FlutterWindowClose.setWindowShouldCloseHandler(
+          () => onClose(context),
+        );
         return null;
       },
       [],
