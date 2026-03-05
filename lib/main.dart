@@ -34,12 +34,12 @@ Future<bool> appInitialization() async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (kReleaseMode) {
-    final proxy = await HttpProxy.createHttpProxy();
-    proxy.host = "proxy.mv.schule";
-    proxy.port = "8080";
-    HttpOverrides.global = proxy;
-  }
+  // if (kReleaseMode) {
+  //   final proxy = await HttpProxy.createHttpProxy();
+  //   proxy.host = "proxy.mv.schule";
+  //   proxy.port = "8080";
+  //   HttpOverrides.global = proxy;
+  // }
 
   final configFound = await appInitialization();
 
