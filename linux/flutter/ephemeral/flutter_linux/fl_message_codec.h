@@ -30,12 +30,10 @@ G_BEGIN_DECLS
 #define FL_MESSAGE_CODEC_ERROR fl_message_codec_error_quark()
 
 typedef enum {
-  // NOLINTBEGIN(readability-identifier-naming)
   FL_MESSAGE_CODEC_ERROR_FAILED,
   FL_MESSAGE_CODEC_ERROR_OUT_OF_DATA,
   FL_MESSAGE_CODEC_ERROR_ADDITIONAL_DATA,
   FL_MESSAGE_CODEC_ERROR_UNSUPPORTED_TYPE,
-  // NOLINTEND(readability-identifier-naming)
 } FlMessageCodecError;
 
 G_MODULE_EXPORT
@@ -67,7 +65,9 @@ struct _FlMessageCodecClass {
    * @codec: an #FlMessageCodec.
    * @message: message to encode or %NULL to encode the null value.
    * @error: (allow-none): #GError location to store the error occurring, or
-   * %NULL.
+   * %NULL. If `error` is not %NULL, `*error` must be initialized (typically
+   * %NULL, but an error from a previous call using GLib error handling is
+   * explicitly valid).
    *
    * Virtual method to encode a message. A subclass must implement this method.
    * If the subclass cannot handle the type of @message then it must generate a
@@ -84,7 +84,9 @@ struct _FlMessageCodecClass {
    * @codec: an #FlMessageCodec.
    * @message: binary message to decode.
    * @error: (allow-none): #GError location to store the error occurring, or
-   * %NULL.
+   * %NULL. If `error` is not %NULL, `*error` must be initialized (typically
+   * %NULL, but an error from a previous call using GLib error handling is
+   * explicitly valid).
    *
    * Virtual method to decode a message. A subclass must implement this method.
    * If @message is too small then a #FL_MESSAGE_CODEC_ERROR_OUT_OF_DATA error
@@ -104,7 +106,9 @@ struct _FlMessageCodecClass {
  * @buffer: buffer to write to.
  * @message: message to encode or %NULL to encode the null value.
  * @error: (allow-none): #GError location to store the error occurring, or
- * %NULL.
+ * %NULL. If `error` is not %NULL, `*error` must be initialized (typically
+ * %NULL, but an error from a previous call using GLib error handling is
+ * explicitly valid).
  *
  * Encodes a message into a binary representation.
  *
@@ -119,7 +123,9 @@ GBytes* fl_message_codec_encode_message(FlMessageCodec* codec,
  * @codec: an #FlMessageCodec.
  * @message: binary message to decode.
  * @error: (allow-none): #GError location to store the error occurring, or
- * %NULL.
+ * %NULL. If `error` is not %NULL, `*error` must be initialized (typically
+ * %NULL, but an error from a previous call using GLib error handling is
+ * explicitly valid).
  *
  * Decodes a message from a binary encoding.
  *
