@@ -28,6 +28,7 @@ G_BEGIN_DECLS
 
 typedef enum {
   // Part of the public API, so fixing the name is a breaking change.
+  // NOLINTNEXTLINE(readability-identifier-naming)
   FL_BINARY_MESSENGER_ERROR_ALREADY_RESPONDED,
 } FlBinaryMessengerError;
 
