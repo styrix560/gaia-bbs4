@@ -1,23 +1,12 @@
 import "package:encrypt/encrypt.dart";
 import "package:gsheets/gsheets.dart";
-import "package:path_provider/path_provider.dart";
 import "package:supernova/supernova.dart";
-import "package:supernova/supernova_io.dart";
 
 import "../types/booking.dart";
 import "../types/config.dart";
 import "../types/price_type.dart";
 import "../types/seat.dart";
 import "api.dart";
-
-Future<void> log(String message, Exception e) async {
-  logger.error(message, e);
-  final directory = await getApplicationSupportDirectory();
-  final file = directory ~/ "error.log";
-  final rwFile = file.openSync(mode: FileMode.writeOnlyAppend);
-  final now = DateTime.now();
-  rwFile.writeStringSync("error timestamp: $now\n$e\n\n");
-}
 
 class SheetsApi extends Api {
   static final _gsheets = GSheets(Config.getApiSecret());
@@ -31,14 +20,9 @@ class SheetsApi extends Api {
 
     final List<List<Cell>>? rows;
 
-    try {
-      final spreadsheet = await _gsheets.spreadsheet(Config.getSheetId());
-      final worksheet = spreadsheet.worksheetByTitle(sheetName);
-      rows = await worksheet?.cells.allRows();
-    } on Exception catch (e) {
-      await log("Error fetching bookings", e);
-      rethrow;
-    }
+    final spreadsheet = await _gsheets.spreadsheet(Config.getSheetId());
+    final worksheet = spreadsheet.worksheetByTitle(sheetName);
+    rows = await worksheet?.cells.allRows();
 
     if (rows == null) return [];
 
@@ -97,18 +81,13 @@ class SheetsApi extends Api {
       row.add(iv.base64);
       rows.add(row.map((e) => '"$e"').toList());
     }
-    try {
-      final spreadsheet = await _gsheets.spreadsheet(Config.getSheetId());
-      final worksheet = spreadsheet.worksheetByTitle(sheetName) ??
-          await spreadsheet.addWorksheet(sheetName);
+    final spreadsheet = await _gsheets.spreadsheet(Config.getSheetId());
+    final worksheet = spreadsheet.worksheetByTitle(sheetName) ??
+        await spreadsheet.addWorksheet(sheetName);
 
-      await worksheet.clear();
-      if (rows.isNotEmpty) {
-        await worksheet.values.insertRows(1, rows);
-      }
-    } on Exception catch (e) {
-      await log("Error writing bookings", e);
-      rethrow;
+    await worksheet.clear();
+    if (rows.isNotEmpty) {
+      await worksheet.values.insertRows(1, rows);
     }
     logger.info("done.");
   }
