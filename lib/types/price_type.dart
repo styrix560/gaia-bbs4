@@ -22,9 +22,9 @@ extension PriceTypeExte on PriceType {
         }
       case BookingTime.evening:
         if (this == PriceType.normal) {
-          return 20;
+          return 7;
         } else {
-          return 15;
+          return 5;
         }
     }
   }
